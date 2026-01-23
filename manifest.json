@@ -1,0 +1,11 @@
+{
+  "name": "ConstraLog Pro",
+  "short_name": "Constra",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#000000",
+  "icons": [
+    { "src": "https://cdn-icons-png.flaticon.com/512/3062/3062539.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}
