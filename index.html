@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Construction Log</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link rel="manifest" href="manifest.json">
+</head>
+<body class="bg-gray-100 font-sans p-4 mb-20">
+  <div class="max-w-md mx-auto">
+    <header class="mb-6">
+      <h1 class="text-3xl font-extrabold text-gray-900">Daily Entry</h1>
+      <p class="text-gray-500">Log costs and income for your site.</p>
+    </header>
+
+    <div class="bg-white p-6 rounded-2xl shadow-xl space-y-6">
+      <div>
+        <label class="block text-sm font-bold text-gray-700 uppercase">Project</label>
+        <select id="projectSelect" class="w-full p-4 mt-2 bg-gray-50 border rounded-xl text-lg appearance-none">
+          <option>Loading projects...</option>
+        </select>
+      </div>
+
+      <div>
+        <label class="block text-sm font-bold text-gray-700 uppercase">Amount ($)</label>
+        <input type="number" id="amount" inputmode="decimal" placeholder="0.00" 
+               class="w-full p-4 mt-2 bg-gray-50 border rounded-xl text-2xl focus:ring-2 focus:ring-green-500">
+      </div>
+
+      <div class="flex space-x-4">
+        <button onclick="setType('Expense')" id="btnExp" class="flex-1 py-4 rounded-xl border-2 border-red-500 text-red-500 font-bold bg-red-50 active:bg-red-500 active:text-white transition">Expense</button>
+        <button onclick="setType('Income')" id="btnInc" class="flex-1 py-4 rounded-xl border-2 border-green-500 text-green-500 font-bold bg-green-50 active:bg-green-500 active:text-white transition">Income</button>
+      </div>
+
+      <button id="submitBtn" class="w-full py-5 bg-black text-white rounded-2xl font-black text-xl shadow-lg active:scale-95 transition-transform">
+        SAVE LOG
+      </button>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
