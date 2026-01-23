@@ -1,5 +1,5 @@
-const SUPABASE_URL = "YOUR_SUPABASE_URL_HERE";
-const SUPABASE_KEY = "YOUR_ANON_KEY_HERE";
+const SUPABASE_URL = "https://sbqyxvxpeqipcuavryhb.supabase.co";
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNicXl4dnhwZXFpcGN1YXZyeWhiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjkxNTk0NjcsImV4cCI6MjA4NDczNTQ2N30.XWbqg5fwC3TDFt-G79H-SGg-9WMdV08qkZ6OzdPK8f8";
 const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 let selectedType = "Expense";
