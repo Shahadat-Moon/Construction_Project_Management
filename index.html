@@ -1,94 +1,105 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Construction Log</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <link rel="manifest" href="manifest.json">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>M/S. S.R Suppliers</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="manifest" href="manifest.json">
+    <style>
+        .modal { display: none; background: rgba(0,0,0,0.5); }
+        .active-page { display: block; }
+        .hidden-page { display: none; }
+    </style>
 </head>
-<body class="bg-gray-100 font-sans p-4 mb-20">
-  <header class="bg-slate-900 text-white p-6 rounded-b-3xl shadow-2xl mb-6">
-  <div class="flex justify-between items-center">
-    <div>
-      <h1 class="text-xs uppercase tracking-widest opacity-70">M/S. S.R Suppliers</h1>
-      <p class="text-2xl font-bold">Project Overview</p>
-    </div>
-    <div class="h-12 w-12 bg-orange-500 rounded-full flex items-center justify-center font-bold">SR</div>
-  </div>
-</header>
+<body class="bg-slate-50 font-sans pb-24">
 
-<div class="grid grid-cols-2 gap-4 px-4 mb-8">
-  <div class="bg-white p-4 rounded-2xl shadow-sm border-l-4 border-green-500">
-    <p class="text-gray-500 text-xs font-bold uppercase">Total Income</p>
-    <p id="totalIncome" class="text-xl font-black text-gray-800">$0.00</p>
-  </div>
-  <div class="bg-white p-4 rounded-2xl shadow-sm border-l-4 border-red-500">
-    <p class="text-gray-500 text-xs font-bold uppercase">Total Expense</p>
-    <p id="totalExpense" class="text-xl font-black text-gray-800">$0.00</p>
-  </div>
-</div>
-
-<div class="px-4">
-  <h3 class="font-bold text-gray-700 mb-4">Quick Project View</h3>
-  <div id="projectList" class="space-y-3">
-    </div>
-</div>
-  <div class="max-w-md mx-auto">
-    <header class="mb-6">
-      <h1 class="text-3xl font-extrabold text-gray-900">Daily Entry</h1>
-      <p class="text-gray-500">Log costs and income for your site.</p>
+    <header class="bg-slate-900 text-white p-6 rounded-b-[2.5rem] shadow-lg">
+        <h1 class="text-xs uppercase tracking-widest text-orange-400 font-bold">M/S. S.R Suppliers</h1>
+        <p id="page-title" class="text-2xl font-black">Dashboard</p>
     </header>
 
-    <div class="bg-white p-6 rounded-2xl shadow-xl space-y-6">
-      <div>
-        <label class="block text-sm font-bold text-gray-700 uppercase">Project</label>
-        <select id="projectSelect" class="w-full p-4 mt-2 bg-gray-50 border rounded-xl text-lg appearance-none">
-          <option>Loading projects...</option>
-        </select>
-      </div>
+    <section id="page-dashboard" class="p-4 space-y-4 active-page">
+        <div class="grid grid-cols-2 gap-4">
+            <div class="bg-white p-5 rounded-3xl shadow-sm border-b-4 border-green-500">
+                <p class="text-gray-400 text-[10px] font-bold uppercase">Total Income</p>
+                <p id="stat-income" class="text-xl font-black text-slate-800">$0</p>
+            </div>
+            <div class="bg-white p-5 rounded-3xl shadow-sm border-b-4 border-red-500">
+                <p class="text-gray-400 text-[10px] font-bold uppercase">Total Expenses</p>
+                <p id="stat-expense" class="text-xl font-black text-slate-800">$0</p>
+            </div>
+        </div>
+        
+        <h3 class="font-bold text-slate-700 pt-4">Project Overview</h3>
+        <div id="ongoing-cards" class="space-y-3">
+            </div>
+    </section>
 
-      <div>
-        <label class="block text-sm font-bold text-gray-700 uppercase">Amount ($)</label>
-        <input type="number" id="amount" inputmode="decimal" placeholder="0.00" 
-               class="w-full p-4 mt-2 bg-gray-50 border rounded-xl text-2xl focus:ring-2 focus:ring-green-500">
-      </div>
+    <section id="page-contacts" class="p-4 hidden-page">
+        <div class="bg-white rounded-3xl p-6 shadow-sm">
+            <h3 class="font-bold border-b pb-2 mb-4">Office Contacts</h3>
+            <p class="text-sm"><b>Main Office:</b> +880 1XXX-XXXXXX</p>
+            <p class="text-sm mt-2"><b>Supply Dept:</b> +880 1XXX-XXXXXX</p>
+            <p class="text-sm mt-2"><b>Email:</b> info@srsuppliers.com</p>
+        </div>
+    </section>
 
-      <div class="flex space-x-4">
-        <button onclick="setType('Expense')" id="btnExp" class="flex-1 py-4 rounded-xl border-2 border-red-500 text-red-500 font-bold bg-red-50 active:bg-red-500 active:text-white transition">Expense</button>
-        <button onclick="setType('Income')" id="btnInc" class="flex-1 py-4 rounded-xl border-2 border-green-500 text-green-500 font-bold bg-green-50 active:bg-green-500 active:text-white transition">Income</button>
-      </div>
+    <section id="page-vision" class="p-4 hidden-page">
+        <div class="bg-orange-500 text-white p-6 rounded-3xl mb-4">
+            <h3 class="font-bold text-xl">Our Vision</h3>
+            <p class="text-sm opacity-90">To be the leading supplier of construction excellence by 2030.</p>
+        </div>
+        <div class="bg-white rounded-3xl p-6 shadow-sm">
+            <h3 class="font-bold mb-3">Key Personnel</h3>
+            <ul class="text-sm space-y-2 text-slate-600">
+                <li>• MD. Shahinur Rahman (Founder)</li>
+                <li>• Project Manager (Engineering)</li>
+            </ul>
+        </div>
+    </section>
 
-      <button id="submitBtn" class="w-full py-5 bg-black text-white rounded-2xl font-black text-xl shadow-lg active:scale-95 transition-transform">
-        SAVE LOG
-      </button>
+    <button onclick="openModal()" class="fixed bottom-24 right-6 bg-orange-600 text-white w-14 h-14 rounded-full shadow-2xl text-3xl font-light">+</button>
+
+    <div id="entryModal" class="modal fixed inset-0 z-[100] flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-sm rounded-[2rem] p-8 shadow-2xl">
+            <h2 class="text-xl font-bold mb-4">New Entry</h2>
+            
+            <label class="text-xs font-bold text-gray-400 uppercase">Type</label>
+            <select id="modalType" class="w-full p-3 mb-4 bg-gray-100 rounded-xl">
+                <option value="expense">Expense (Out)</option>
+                <option value="income">Income (In)</option>
+            </select>
+
+            <label class="text-xs font-bold text-gray-400 uppercase">Project</label>
+            <select id="modalProject" class="w-full p-3 mb-4 bg-gray-100 rounded-xl"></select>
+
+            <label class="text-xs font-bold text-gray-400 uppercase">Amount</label>
+            <input type="number" id="modalAmount" class="w-full p-3 mb-6 bg-gray-100 rounded-xl text-xl" placeholder="0.00">
+
+            <div class="flex space-x-3">
+                <button onclick="closeModal()" class="flex-1 py-3 text-gray-500 font-bold">Cancel</button>
+                <button onclick="saveEntry()" class="flex-1 py-3 bg-slate-900 text-white rounded-xl font-bold">Save</button>
+            </div>
+        </div>
     </div>
-  </div>
 
-  <script src="app.js"></script>
+    <nav class="fixed bottom-0 w-full bg-white border-t p-4 flex justify-around items-center rounded-t-3xl shadow-[0_-5px_20px_rgba(0,0,0,0.05)]">
+        <button onclick="showPage('dashboard')" class="text-center">
+            <span class="block text-xl">🏠</span>
+            <span class="text-[10px] font-bold">Home</span>
+        </button>
+        <button onclick="showPage('contacts')" class="text-center">
+            <span class="block text-xl">📞</span>
+            <span class="text-[10px] font-bold">Contact</span>
+        </button>
+        <button onclick="showPage('vision')" class="text-center">
+            <span class="block text-xl">🏢</span>
+            <span class="text-[10px] font-bold">About</span>
+        </button>
+    </nav>
+
+    <script src="app.js"></script>
 </body>
 </html>
-
-<nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 flex justify-around p-3 z-50">
-  <button onclick="showPage('dashboard')" class="flex flex-col items-center text-blue-600">
-    <span class="text-xl">📊</span>
-    <span class="text-[10px] font-bold">Dash</span>
-  </button>
-  <button onclick="showPage('add')" class="flex flex-col items-center text-gray-400">
-    <span class="text-xl">➕</span>
-    <span class="text-[10px] font-bold">Add</span>
-  </button>
-  <button onclick="showPage('projects')" class="flex flex-col items-center text-gray-400">
-    <span class="text-xl">🏗️</span>
-    <span class="text-[10px] font-bold">Projects</span>
-  </button>
-  <button onclick="showPage('contacts')" class="flex flex-col items-center text-gray-400">
-    <span class="text-xl">📇</span>
-    <span class="text-[10px] font-bold">Contacts</span>
-  </button>
-  <button onclick="showPage('about')" class="flex flex-col items-center text-gray-400">
-    <span class="text-xl">🏢</span>
-    <span class="text-[10px] font-bold">Firm</span>
-  </button>
-</nav>
