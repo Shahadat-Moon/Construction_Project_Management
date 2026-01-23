@@ -6,75 +6,150 @@
     <title>M/S. S.R Suppliers</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="manifest" href="manifest.json">
     <style>
         .page { display: none; }
         .page-active { display: block; }
+        /* Hide scrollbar for clean app look */
+        body::-webkit-scrollbar { display: none; }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-900 pb-20">
+<body class="bg-slate-50 text-slate-900 pb-24">
 
-    <nav class="fixed bottom-0 w-full bg-white border-t flex justify-around p-4 z-50 rounded-t-3xl shadow-lg">
-        <button onclick="router('dashboard')" class="text-center">🏠<br><span class="text-[10px] font-bold">Home</span></button>
-        <button onclick="router('add-expense')" class="text-center text-red-500">📉<br><span class="text-[10px] font-bold">Expense</span></button>
-        <button onclick="router('add-income')" class="text-center text-green-500">📈<br><span class="text-[10px] font-bold">Income</span></button>
-        <button onclick="router('contacts')" class="text-center">📞<br><span class="text-[10px] font-bold">Contact</span></button>
+    <nav class="fixed bottom-0 w-full bg-white border-t flex justify-around p-4 z-50 rounded-t-3xl shadow-[0_-5px_20px_rgba(0,0,0,0.05)]">
+        <button onclick="router('dashboard')" class="text-center group">
+            <span class="text-xl">🏠</span><br><span class="text-[10px] font-bold text-slate-400 group-active:text-slate-900">Home</span>
+        </button>
+        <button onclick="router('projects-page')" class="text-center group">
+            <span class="text-xl">🏗️</span><br><span class="text-[10px] font-bold text-slate-400">Projects</span>
+        </button>
+        <button onclick="router('add-expense')" class="text-center group">
+            <span class="text-xl">📉</span><br><span class="text-[10px] font-bold text-red-400">Expense</span>
+        </button>
+        <button onclick="router('add-income')" class="text-center group">
+            <span class="text-xl">📈</span><br><span class="text-[10px] font-bold text-green-400">Income</span>
+        </button>
+        <button onclick="router('about-page')" class="text-center group">
+            <span class="text-xl">🏢</span><br><span class="text-[10px] font-bold text-slate-400">About</span>
+        </button>
     </nav>
 
-    <main id="dashboard" class="page page-active p-6">
-        <h1 class="text-2xl font-black mb-6">M/S. S.R Suppliers</h1>
-        
-        <div class="grid grid-cols-2 gap-4">
-            <div class="bg-gradient-to-br from-blue-600 to-blue-700 p-4 rounded-2xl text-white shadow-md">
-                <p class="text-[10px] uppercase opacity-80">Ongoing Sites</p>
-                <p id="count-ongoing" class="text-2xl font-bold">0</p>
+    <section id="dashboard" class="page page-active p-6">
+        <header class="mb-6">
+            <h1 class="text-xs uppercase tracking-[0.2em] text-orange-600 font-black">M/S. S.R Suppliers</h1>
+            <p class="text-2xl font-black text-slate-800">Operational Overview</p>
+        </header>
+
+        <div class="grid grid-cols-2 gap-3" id="dash-stats">
+            <div class="bg-slate-900 text-white p-4 rounded-2xl shadow-lg col-span-2">
+                <p class="text-[10px] uppercase opacity-60 font-bold">Total Portfolio Value</p>
+                <p id="stat-portfolio" class="text-3xl font-black">$0</p>
             </div>
-            <div class="bg-white p-4 rounded-2xl shadow-sm border">
-                <p class="text-[10px] text-slate-400 uppercase">Portfolio Value</p>
-                <p id="total-contract" class="text-lg font-bold text-slate-800">$0</p>
+            <div class="bg-white p-4 rounded-2xl border shadow-sm">
+                <p class="text-[10px] text-slate-400 font-bold uppercase">Active Sites</p>
+                <p id="stat-active" class="text-xl font-bold">0</p>
+            </div>
+            <div class="bg-white p-4 rounded-2xl border shadow-sm">
+                <p class="text-[10px] text-slate-400 font-bold uppercase">Completed</p>
+                <p id="stat-done" class="text-xl font-bold">0</p>
             </div>
             <div class="bg-green-50 p-4 rounded-2xl border border-green-100">
-                <p class="text-[10px] text-green-600 uppercase font-bold">Cash In</p>
-                <p id="total-income" class="text-lg font-bold">$0</p>
+                <p class="text-[10px] text-green-600 font-bold uppercase">Cash In</p>
+                <p id="stat-income" class="text-lg font-black text-green-700">$0</p>
             </div>
             <div class="bg-red-50 p-4 rounded-2xl border border-red-100">
-                <p class="text-[10px] text-red-600 uppercase font-bold">Cash Out</p>
-                <p id="total-expense" class="text-lg font-bold">$0</p>
+                <p class="text-[10px] text-red-600 font-bold uppercase">Cash Out</p>
+                <p id="stat-expense" class="text-lg font-black text-red-700">$0</p>
+            </div>
+            <div class="bg-blue-50 p-4 rounded-2xl border border-blue-100 col-span-2 text-center">
+                <p class="text-[10px] text-blue-600 font-bold uppercase">Net Company Balance</p>
+                <p id="stat-balance" class="text-2xl font-black text-blue-900">$0</p>
             </div>
         </div>
+    </section>
 
-        <h2 class="mt-8 mb-4 font-bold text-slate-600">Active Projects</h2>
-        <div id="project-list" class="space-y-3"></div>
-    </main>
-
-    <main id="add-expense" class="page p-6">
-        <h2 class="text-xl font-bold text-red-600 mb-6 underline">Add New Expense</h2>
-        <div class="space-y-4">
-            <select id="exp-project" class="w-full p-4 bg-white border rounded-xl"></select>
-            <input type="number" id="exp-amount" placeholder="Amount ($)" class="w-full p-4 border rounded-xl">
-            <input type="date" id="exp-date" class="w-full p-4 border rounded-xl">
-            <input type="text" id="exp-type" placeholder="Type (e.g. Labor, Fuel)" class="w-full p-4 border rounded-xl">
-            <textarea id="exp-detail" placeholder="Details/Notes" class="w-full p-4 border rounded-xl"></textarea>
-            <button onclick="saveExpense()" class="w-full py-4 bg-red-600 text-white font-bold rounded-xl shadow-lg">Save & View Project</button>
+    <section id="projects-page" class="page p-6">
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-2xl font-black">All Projects</h2>
+            <button onclick="router('add-project')" class="bg-orange-600 text-white px-4 py-2 rounded-full text-xs font-bold shadow-lg">+ NEW SITE</button>
         </div>
-    </main>
-
-    <main id="add-income" class="page p-6">
-        <h2 class="text-xl font-bold text-green-600 mb-6 underline">Add New Income</h2>
-        <div class="space-y-4">
-            <select id="inc-project" class="w-full p-4 bg-white border rounded-xl"></select>
-            <input type="number" id="inc-amount" placeholder="Amount ($)" class="w-full p-4 border rounded-xl">
-            <input type="date" id="inc-date" class="w-full p-4 border rounded-xl">
-            <textarea id="inc-detail" placeholder="Details/Notes" class="w-full p-4 border rounded-xl"></textarea>
-            <button onclick="saveIncome()" class="w-full py-4 bg-green-600 text-white font-bold rounded-xl shadow-lg">Save & View Project</button>
-        </div>
-    </main>
-
-    <main id="project-view" class="page p-6">
-        <button onclick="router('dashboard')" class="text-blue-600 mb-4 font-bold">← Back to Dashboard</button>
-        <h2 id="view-project-name" class="text-2xl font-black">Project Details</h2>
-        <div id="project-stats" class="mt-6 space-y-4">
+        <div id="all-projects-list" class="space-y-4">
             </div>
-    </main>
+    </section>
+
+    <section id="add-project" class="page p-6">
+        <button onclick="router('projects-page')" class="text-slate-400 mb-4 font-bold">← Back</button>
+        <h2 class="text-2xl font-black mb-6">Create New Project</h2>
+        <div class="bg-white p-6 rounded-3xl shadow-sm space-y-4">
+            <input type="text" id="p-name" placeholder="Project Name" class="w-full p-4 bg-slate-50 border rounded-xl">
+            <input type="number" id="p-contract" placeholder="Contract Value ($)" class="w-full p-4 bg-slate-50 border rounded-xl">
+            <input type="text" id="p-loc" placeholder="Location" class="w-full p-4 bg-slate-50 border rounded-xl">
+            <button onclick="saveNewProject()" class="w-full py-4 bg-slate-900 text-white font-bold rounded-xl shadow-lg">Register Site</button>
+        </div>
+    </section>
+
+    <section id="add-expense" class="page p-6">
+        <h2 class="text-2xl font-black text-red-600 mb-6 underline decoration-4">Add Expense</h2>
+        <div class="bg-white p-6 rounded-3xl shadow-sm space-y-4">
+            <select id="exp-p-id" class="w-full p-4 bg-slate-50 border rounded-xl text-slate-500 font-bold"></select>
+            <input type="number" id="exp-amt" placeholder="Amount ($)" class="w-full p-4 bg-slate-50 border rounded-xl text-xl font-bold">
+            <input type="date" id="exp-date" class="w-full p-4 bg-slate-50 border rounded-xl">
+            <input type="text" id="exp-category" placeholder="Expense Type (e.g. Labor, Sand)" class="w-full p-4 bg-slate-50 border rounded-xl">
+            <textarea id="exp-note" placeholder="Details/Notes" class="w-full p-4 bg-slate-50 border rounded-xl"></textarea>
+            <button onclick="saveTransaction('expense')" class="w-full py-4 bg-red-600 text-white font-bold rounded-xl shadow-lg">Save & View Project</button>
+        </div>
+    </section>
+
+    <section id="add-income" class="page p-6">
+        <h2 class="text-2xl font-black text-green-600 mb-6 underline decoration-4">Add Payment</h2>
+        <div class="bg-white p-6 rounded-3xl shadow-sm space-y-4">
+            <select id="inc-p-id" class="w-full p-4 bg-slate-50 border rounded-xl text-slate-500 font-bold"></select>
+            <input type="number" id="inc-amt" placeholder="Amount Received ($)" class="w-full p-4 bg-slate-50 border rounded-xl text-xl font-bold">
+            <input type="date" id="inc-date" class="w-full p-4 bg-slate-50 border rounded-xl">
+            <textarea id="inc-note" placeholder="Payment Details" class="w-full p-4 bg-slate-50 border rounded-xl"></textarea>
+            <button onclick="saveTransaction('income')" class="w-full py-4 bg-green-600 text-white font-bold rounded-xl shadow-lg">Save & View Project</button>
+        </div>
+    </section>
+
+    <section id="project-detail" class="page p-6">
+        <button onclick="router('projects-page')" class="text-blue-600 mb-4 font-bold text-sm">← Back to Projects</button>
+        <div id="detail-header" class="mb-6">
+            </div>
+        <div id="detail-stats" class="space-y-4 mb-6">
+            </div>
+        <h3 class="font-bold text-slate-400 uppercase text-xs mb-3">Recent Logs</h3>
+        <div id="detail-logs" class="space-y-2">
+            </div>
+    </section>
+
+    <section id="about-page" class="page p-6">
+        <div class="bg-slate-900 text-white p-8 rounded-3xl shadow-xl mb-6">
+            <h2 class="text-orange-500 font-bold text-xs uppercase mb-2">Our Vision</h2>
+            <p class="text-xl font-serif italic">"Building the foundation of modern infrastructure through integrity and quality supply."</p>
+        </div>
+        <div class="bg-white p-6 rounded-3xl border mb-6">
+            <h3 class="font-black text-lg mb-4">Key Personnel</h3>
+            <div class="space-y-4">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-slate-200 rounded-full flex items-center justify-center font-bold">SR</div>
+                    <div>
+                        <p class="font-bold text-sm">MD. Shahinur Rahman</p>
+                        <p class="text-[10px] text-slate-400">Proprietor / Managing Director</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-3 opacity-60">
+                    <div class="w-10 h-10 bg-slate-200 rounded-full flex items-center justify-center font-bold">ENG</div>
+                    <div>
+                        <p class="font-bold text-sm">Head of Engineering</p>
+                        <p class="text-[10px] text-slate-400">Project Operations</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="text-center text-slate-300 text-[10px] uppercase font-bold">
+            M/S. S.R Suppliers © 2026
+        </div>
+    </section>
 
     <script src="app.js"></script>
 </body>
