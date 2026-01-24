@@ -1,68 +1,95 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Project Details</title>
 <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-slate-100 p-4">
 
-<!-- Header -->
+<body class="bg-slate-100 min-h-screen">
+
+<!-- HEADER -->
 <header class="bg-white shadow px-4 py-3 flex justify-between items-center sticky top-0 z-10">
-  <a href="projects.html" class="text-blue-600 text-sm">← Back</a>
-  <h1 class="text-lg font-semibold">Metro Flyover – Dhaka</h1>
-  <img src="logo.png" alt="Logo" class="h-8 w-auto cursor-pointer">
+  <div>
+    <h1 id="projectName" class="text-lg font-semibold">Project</h1>
+    <p id="projectId" class="text-xs text-gray-500"></p>
+  </div>
+  <img src="logo.jpg" class="h-8"/>
 </header>
 
-<main class="space-y-4 pb-24">
+<main class="p-4 pb-28 space-y-6">
 
-<!-- Summary Cards -->
-<div class="grid grid-cols-2 gap-3">
-  <div class="bg-white p-4 rounded-xl shadow">
-    <p class="text-xs text-gray-500">Contract Value</p>
-    <p class="font-bold">৳ 10,000,000</p>
-  </div>
-  <div class="bg-white p-4 rounded-xl shadow">
-    <p class="text-xs text-gray-500">Advance Received</p>
-    <p class="font-bold">৳ 1,000,000</p>
-  </div>
-  <div class="bg-white p-4 rounded-xl shadow">
-    <p class="text-xs text-gray-500">Total Billed</p>
-    <p class="font-bold">৳ 8,500,000</p>
-  </div>
-  <div class="bg-white p-4 rounded-xl shadow">
-    <p class="text-xs text-gray-500">Total Retention</p>
-    <p class="font-bold text-red-600">৳ 850,000</p>
-  </div>
-</div>
+  <!-- STATUS CARD -->
+  <section class="bg-white rounded-xl shadow p-4 flex justify-between items-center">
+    <div>
+      <p class="text-xs text-gray-500">Project Status</p>
+      <p id="projectStatus" class="font-semibold text-blue-600">Ongoing</p>
+    </div>
+    <button id="completeBtn"
+      class="px-4 py-2 text-sm bg-green-600 text-white rounded-lg hidden">
+      Mark Completed
+    </button>
+  </section>
 
-<!-- Project Dates -->
-<div class="bg-white p-4 rounded-xl shadow">
-  <p class="text-sm text-gray-500">Start Date: 01 Jan 2026</p>
-  <p class="text-sm text-gray-500">Expected Completion: 30 Jun 2026</p>
-  <p class="text-sm text-gray-500">Actual Completion: 12 Jul 2026</p>
-  <p class="text-sm text-gray-500">Status: Completed</p>
-</div>
+  <!-- PROJECT INFO -->
+  <section class="bg-white rounded-xl shadow p-4 space-y-3">
+    <h2 class="font-semibold text-gray-700">Project Information</h2>
 
-<!-- Retention Monitoring -->
-<div class="bg-white p-4 rounded-xl shadow">
-  <h2 class="font-semibold mb-2">Retention Monitoring</h2>
-  <p class="text-sm">Retention Pending: <span class="font-bold text-orange-600">৳ 850,000</span></p>
-  <p class="text-xs text-gray-400 mt-1">(Calculated from all income bills)</p>
-</div>
+    <div class="grid grid-cols-2 gap-3 text-sm">
+      <div>
+        <p class="text-gray-500">Authority</p>
+        <p id="authority">-</p>
+      </div>
+      <div>
+        <p class="text-gray-500">Location</p>
+        <p id="location">-</p>
+      </div>
+      <div>
+        <p class="text-gray-500">Contract Value</p>
+        <p id="contractValue">-</p>
+      </div>
+      <div>
+        <p class="text-gray-500">Advance Payment</p>
+        <p id="advancePayment">-</p>
+      </div>
+      <div>
+        <p class="text-gray-500">Expected Completion</p>
+        <p id="expectedCompletion">-</p>
+      </div>
+      <div>
+        <p class="text-gray-500">Actual Completion</p>
+        <p id="actualCompletion">-</p>
+      </div>
+    </div>
+  </section>
 
-<!-- Income / Retention History -->
-<div class="bg-white p-4 rounded-xl shadow">
-  <h2 class="font-semibold mb-2">Income / Retention History</h2>
-  <div class="border-b py-2 flex justify-between text-sm"><span>2nd Bill</span><span>৳ 300,000</span></div>
-  <div class="border-b py-2 flex justify-between text-sm"><span>3rd Bill</span><span>৳ 350,000</span></div>
-  <div class="py-2 flex justify-between text-sm"><span>4th Bill</span><span>৳ 200,000</span></div>
-</div>
+  <!-- FINANCIAL SUMMARY (PLACEHOLDER) -->
+  <section class="bg-white rounded-xl shadow p-4 space-y-3">
+    <h2 class="font-semibold text-gray-700">Financial Summary</h2>
+    <div class="grid grid-cols-2 gap-3 text-sm">
+      <div>
+        <p class="text-gray-500">Total Bill</p>
+        <p>—</p>
+      </div>
+      <div>
+        <p class="text-gray-500">Total Received</p>
+        <p>—</p>
+      </div>
+      <div>
+        <p class="text-gray-500">Retention</p>
+        <p>—</p>
+      </div>
+      <div>
+        <p class="text-gray-500">Balance</p>
+        <p>—</p>
+      </div>
+    </div>
+  </section>
 
 </main>
 
-<!-- Bottom Tabs -->
+<!-- BOTTOM NAV -->
 <nav class="fixed bottom-0 left-0 right-0 bg-white border-t shadow">
   <div class="grid grid-cols-5 text-xs text-gray-600">
     <a href="index.html" class="py-3 flex flex-col items-center">🏠<span>Home</span></a>
@@ -72,6 +99,65 @@
     <a href="reports.html" class="py-3 flex flex-col items-center">📊<span>Report</span></a>
   </div>
 </nav>
+
+<!-- SUPABASE + LOGIC -->
+<script type="module">
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+
+const supabase = createClient(
+  'https://sbqyxvxpeqipcuavryhb.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNicXl4dnhwZXFpcGN1YXZyeWhiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjkxNTk0NjcsImV4cCI6MjA4NDczNTQ2N30.XWbqg5fwC3TDFt-G79H-SGg-9WMdV08qkZ6OzdPK8f8'
+)
+
+const projectId = new URLSearchParams(window.location.search).get('id')
+
+async function loadProject() {
+  const { data, error } = await supabase
+    .from('projects')
+    .select('*')
+    .eq('id', projectId)
+    .single()
+
+  if (error) {
+    alert('Project not found')
+    return
+  }
+
+  document.getElementById('projectName').innerText = data.name
+  document.getElementById('projectId').innerText = `Project ID: ${data.id}`
+  document.getElementById('projectStatus').innerText = data.status
+
+  document.getElementById('authority').innerText = data.authority || '-'
+  document.getElementById('location').innerText = data.location || '-'
+  document.getElementById('contractValue').innerText = `৳ ${data.contract_value || 0}`
+  document.getElementById('advancePayment').innerText = `৳ ${data.advance_payment || 0}`
+  document.getElementById('expectedCompletion').innerText = data.expected_completion || '-'
+  document.getElementById('actualCompletion').innerText = data.actual_completion || '-'
+
+  if (data.status === 'Ongoing') {
+    document.getElementById('completeBtn').classList.remove('hidden')
+  }
+}
+
+document.getElementById('completeBtn').onclick = async () => {
+  if (!confirm('Mark this project as completed?')) return
+
+  const { error } = await supabase
+    .from('projects')
+    .update({
+      status: 'Completed',
+      actual_completion: new Date().toISOString().split('T')[0]
+    })
+    .eq('id', projectId)
+
+  if (!error) {
+    alert('Project marked as completed')
+    loadProject()
+  }
+}
+
+loadProject()
+</script>
 
 </body>
 </html>
