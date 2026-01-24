@@ -6,15 +6,8 @@
 <title>Projects</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/supabase.min.js"></script>
-<script>
-  // Replace with your own Supabase project info
-  const SUPABASE_URL = 'https://sbqyxvxpeqipcuavryhb.supabase.co';
-  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNicXl4dnhwZXFpcGN1YXZyeWhiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjkxNTk0NjcsImV4cCI6MjA4NDczNTQ2N30.XWbqg5fwC3TDFt-G79H-SGg-9WMdV08qkZ6OzdPK8f8';
-  const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-</script>
-
 </head>
-  
+
 <body class="bg-slate-100">
 
 <!-- Header -->
@@ -27,19 +20,18 @@
 
   <!-- Ongoing Projects -->
   <section>
-  <h2 class="text-lg font-bold mt-4">Ongoing Projects</h2>
-  <div id="ongoingProjects" class="space-y-3">
-    <!-- Ongoing project cards injected here -->
-  </div>
-
-    </section>
+    <h2 class="text-lg font-bold mt-4">Ongoing Projects</h2>
+    <div id="ongoingProjects" class="space-y-3">
+      <!-- Ongoing project cards injected here -->
+    </div>
+  </section>
 
   <!-- Completed Projects -->
   <section>
     <h2 class="text-lg font-bold mt-6">Completed Projects</h2>
-  <div id="completedProjects" class="space-y-3">
-    <!-- Completed project cards injected here -->
-  </div>
+    <div id="completedProjects" class="space-y-3">
+      <!-- Completed project cards injected here -->
+    </div>
   </section>
 
 </main>
@@ -59,64 +51,76 @@
   </div>
 </nav>
 
+<!-- Supabase + Fetch Projects -->
 <script>
+  // ✅ Step 1: Initialize Supabase
+  const SUPABASE_URL = 'https://sbqyxvxpeqipcuavryhb.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNicXl4dnhwZXFpcGN1YXZyeWhiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjkxNTk0NjcsImV4cCI6MjA4NDczNTQ2N30.XWbqg5fwC3TDFt-G79H-SGg-9WMdV08qkZ6OzdPK8f8';
+  const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-async function loadProjects() {
-  // Ongoing Projects
-  const { data: ongoing, error: ongoingError } = await supabase
-    .from('projects')
-    .select('*')
-    .eq('status', 'Ongoing')
-    .order('start_date', { ascending: true });
+  // ✅ Step 2: Load Projects Function
+  async function loadProjects() {
+    try {
+      // Ongoing Projects
+      const { data: ongoing, error: ongoingError } = await supabase
+        .from('projects')
+        .select('*')
+        .eq('status', 'Ongoing')
+        .order('start_date', { ascending: true });
 
-  if (ongoingError) console.error('Error loading ongoing projects:', ongoingError);
+      if (ongoingError) throw ongoingError;
 
-  const ongoingContainer = document.getElementById('ongoingProjects');
-  ongoingContainer.innerHTML = '';
-  ongoing?.forEach(p => {
-    const card = document.createElement('div');
-    card.className = "bg-white p-4 rounded-xl shadow cursor-pointer";
-    card.innerHTML = `
-      <h3 class="font-semibold">${p.name}</h3>
-      <p class="text-xs text-gray-500">Expected Completion: ${p.expected_completion || '-'}</p>
-      <p class="text-xs text-gray-500">Advance Payment: ৳ ${p.advance_payment || 0}</p>
-    `;
-    card.addEventListener('click', () => {
-      window.location.href = `project.html?id=${p.id}`;
-    });
-    ongoingContainer.appendChild(card);
-  });
+      const ongoingContainer = document.getElementById('ongoingProjects');
+      ongoingContainer.innerHTML = '';
 
-  // Completed Projects
-  const { data: completed, error: completedError } = await supabase
-    .from('projects')
-    .select('*')
-    .eq('status', 'Completed')
-    .order('actual_completion', { ascending: true });
+      ongoing.forEach(p => {
+        const card = document.createElement('div');
+        card.className = "bg-white p-4 rounded-xl shadow cursor-pointer hover:shadow-lg hover:bg-blue-50 transition-all";
+        card.innerHTML = `
+          <h3 class="font-semibold">${p.name}</h3>
+          <p class="text-xs text-gray-500">Expected Completion: ${p.expected_completion || '-'}</p>
+          <p class="text-xs text-gray-500">Advance Payment: ৳ ${p.advance_payment || 0}</p>
+        `;
+        card.addEventListener('click', () => {
+          window.location.href = `project.html?id=${p.id}`;
+        });
+        ongoingContainer.appendChild(card);
+      });
 
-  if (completedError) console.error('Error loading completed projects:', completedError);
+      // Completed Projects
+      const { data: completed, error: completedError } = await supabase
+        .from('projects')
+        .select('*')
+        .eq('status', 'Completed')
+        .order('actual_completion', { ascending: true });
 
-  const completedContainer = document.getElementById('completedProjects');
-  completedContainer.innerHTML = '';
-  completed?.forEach(p => {
-    const card = document.createElement('div');
-    card.className = "bg-white p-4 rounded-xl shadow cursor-pointer";
-    card.innerHTML = `
-      <h3 class="font-semibold">${p.name}</h3>
-      <p class="text-xs text-gray-500">Actual Completion: ${p.actual_completion || '-'}</p>
-      <p class="text-xs text-gray-500">Advance Payment: ৳ ${p.advance_payment || 0}</p>
-    `;
-    card.addEventListener('click', () => {
-      window.location.href = `project.html?id=${p.id}`;
-    });
-    completedContainer.appendChild(card);
-  });
-}
+      if (completedError) throw completedError;
 
-// Load projects on page load
-loadProjects();
+      const completedContainer = document.getElementById('completedProjects');
+      completedContainer.innerHTML = '';
+
+      completed.forEach(p => {
+        const card = document.createElement('div');
+        card.className = "bg-white p-4 rounded-xl shadow cursor-pointer hover:shadow-lg hover:bg-green-50 transition-all";
+        card.innerHTML = `
+          <h3 class="font-semibold">${p.name}</h3>
+          <p class="text-xs text-gray-500">Actual Completion: ${p.actual_completion || '-'}</p>
+          <p class="text-xs text-gray-500">Advance Payment: ৳ ${p.advance_payment || 0}</p>
+        `;
+        card.addEventListener('click', () => {
+          window.location.href = `project.html?id=${p.id}`;
+        });
+        completedContainer.appendChild(card);
+      });
+
+    } catch (err) {
+      console.error('Error loading projects:', err);
+    }
+  }
+
+  // ✅ Step 3: Call the function when page loads
+  loadProjects();
 </script>
 
-  
 </body>
 </html>
