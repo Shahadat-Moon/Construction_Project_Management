@@ -5,35 +5,40 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Projects</title>
 <script src="https://cdn.tailwindcss.com"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/supabase.min.js"></script>
-<script>
-  const SUPABASE_URL = 'https://sbqyxvxpeqipcuavryhb.supabase.co';
-  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNicXl4dnhwZXFpcGN1YXZyeWhiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjkxNTk0NjcsImV4cCI6MjA4NDczNTQ2N30.XWbqg5fwC3TDFt-G79H-SGg-9WMdV08qkZ6OzdPK8f8';
-  const supabase = Supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-</script>
 </head>
+<body class="bg-slate-100 min-h-screen">
 
-<body class="bg-slate-100">
-
+<!-- Header -->
 <header class="bg-white shadow px-4 py-3 flex justify-between items-center sticky top-0 z-10">
   <h1 class="text-lg font-semibold">Projects</h1>
   <img src="logo.jpg" alt="Company Logo" class="h-8 w-auto cursor-pointer">
 </header>
 
-<main class="p-4 pb-24 space-y-6">
+<main class="p-4 pb-28 space-y-6">
+
+  <!-- Ongoing Projects -->
   <section>
-    <h2 class="text-lg font-bold mt-4">Ongoing Projects</h2>
-    <div id="ongoingProjects" class="space-y-3"></div>
+    <h2 class="text-lg font-bold mt-4 mb-2">Ongoing Projects</h2>
+    <div id="ongoingProjects" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <!-- Ongoing project cards injected here -->
+    </div>
   </section>
 
+  <!-- Completed Projects -->
   <section>
-    <h2 class="text-lg font-bold mt-6">Completed Projects</h2>
-    <div id="completedProjects" class="space-y-3"></div>
+    <h2 class="text-lg font-bold mt-6 mb-2">Completed Projects</h2>
+    <div id="completedProjects" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <!-- Completed project cards injected here -->
+    </div>
   </section>
+
 </main>
 
-<a href="project-add.html" class="fixed bottom-20 right-4 bg-blue-600 text-white w-14 h-14 rounded-full flex items-center justify-center shadow-lg text-2xl">+</a>
+<!-- Floating Add Project -->
+<a href="project-add.html"
+   class="fixed bottom-24 right-4 bg-blue-600 text-white w-16 h-16 rounded-full flex items-center justify-center shadow-lg text-3xl hover:bg-blue-700 transition-all">+</a>
 
+<!-- Bottom Tabs -->
 <nav class="fixed bottom-0 left-0 right-0 bg-white border-t shadow">
   <div class="grid grid-cols-5 text-xs text-gray-600">
     <a href="index.html" class="py-3 flex flex-col items-center">🏠<span>Home</span></a>
@@ -44,10 +49,17 @@
   </div>
 </nav>
 
-<script>
+<!-- Supabase Module Script -->
+<script type="module">
+  import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/supabase.min.js';
+
+  const SUPABASE_URL = 'https://sbqyxvxpeqipcuavryhb.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNicXl4dnhwZXFpcGN1YXZyeWhiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjkxNTk0NjcsImV4cCI6MjA4NDczNTQ2N30.XWbqg5fwC3TDFt-G79H-SGg-9WMdV08qkZ6OzdPK8f8';
+  const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
   async function loadProjects() {
     try {
-      // Ongoing Projects
+      // --- Ongoing Projects ---
       const { data: ongoing, error: ongoingError } = await supabase
         .from('projects')
         .select('*')
@@ -59,11 +71,11 @@
       ongoingContainer.innerHTML = '';
       ongoing.forEach(p => {
         const card = document.createElement('div');
-        card.className = "bg-white p-4 rounded-xl shadow cursor-pointer hover:shadow-lg hover:bg-blue-50 transition-all";
+        card.className = "bg-blue-50 border-l-4 border-blue-600 p-4 rounded-xl shadow cursor-pointer hover:shadow-lg transition-all";
         card.innerHTML = `
-          <h3 class="font-semibold">${p.name}</h3>
-          <p class="text-xs text-gray-500">Expected Completion: ${p.expected_completion || '-'}</p>
-          <p class="text-xs text-gray-500">Advance Payment: ৳ ${p.advance_payment || 0}</p>
+          <h3 class="font-semibold text-blue-800">${p.name}</h3>
+          <p class="text-sm text-gray-600">Expected Completion: ${p.expected_completion || '-'}</p>
+          <p class="text-sm text-gray-600">Advance Payment: ৳ ${p.advance_payment || 0}</p>
         `;
         card.addEventListener('click', () => {
           window.location.href = `project.html?id=${p.id}`;
@@ -71,7 +83,7 @@
         ongoingContainer.appendChild(card);
       });
 
-      // Completed Projects
+      // --- Completed Projects ---
       const { data: completed, error: completedError } = await supabase
         .from('projects')
         .select('*')
@@ -83,11 +95,11 @@
       completedContainer.innerHTML = '';
       completed.forEach(p => {
         const card = document.createElement('div');
-        card.className = "bg-white p-4 rounded-xl shadow cursor-pointer hover:shadow-lg hover:bg-green-50 transition-all";
+        card.className = "bg-green-50 border-l-4 border-green-600 p-4 rounded-xl shadow cursor-pointer hover:shadow-lg transition-all";
         card.innerHTML = `
-          <h3 class="font-semibold">${p.name}</h3>
-          <p class="text-xs text-gray-500">Actual Completion: ${p.actual_completion || '-'}</p>
-          <p class="text-xs text-gray-500">Advance Payment: ৳ ${p.advance_payment || 0}</p>
+          <h3 class="font-semibold text-green-800">${p.name}</h3>
+          <p class="text-sm text-gray-600">Actual Completion: ${p.actual_completion || '-'}</p>
+          <p class="text-sm text-gray-600">Advance Payment: ৳ ${p.advance_payment || 0}</p>
         `;
         card.addEventListener('click', () => {
           window.location.href = `project.html?id=${p.id}`;
@@ -100,6 +112,7 @@
     }
   }
 
+  // Load on page load
   loadProjects();
 </script>
 
