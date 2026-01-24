@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Expense</title>
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-100 p-4">
+
+<!-- Header -->
+<header class="bg-white shadow px-4 py-3 flex justify-between items-center sticky top-0 z-10">
+  <h1 class="text-lg font-semibold">Expense</h1>
+  <div class="flex items-center space-x-2">
+    <p class="text-sm font-medium">M/S. S.R Suppliers</p>
+    <img src="logo.png" alt="Logo" class="h-8 w-auto cursor-pointer">
+  </div>
+</header>
+
+<main class="space-y-4 pb-24">
+
+  <!-- Summary Cards -->
+  <div class="grid grid-cols-2 gap-3">
+    <div class="bg-white p-4 rounded-xl shadow">
+      <p class="text-xs text-gray-500">Total Expense</p>
+      <p class="font-bold">৳ 6,200,000</p>
+    </div>
+    <div class="bg-white p-4 rounded-xl shadow">
+      <p class="text-xs text-gray-500">Total Paid</p>
+      <p class="font-bold text-green-600">৳ 5,950,000</p>
+    </div>
+  </div>
+
+  <!-- Recent Expense Entries -->
+  <section class="bg-white p-4 rounded-xl shadow space-y-2">
+    <h2 class="font-semibold mb-2">Recent Expense Entries</h2>
+
+    <div class="flex justify-between text-sm border-b py-2">
+      <div>
+        <p class="font-medium">Metro Flyover – Material</p>
+        <p class="text-gray-500">Date: 12 Jan 2026</p>
+      </div>
+      <div class="text-right">
+        <p>৳ 500,000</p>
+        <p class="text-gray-500">Paid: ৳ 500,000</p>
+      </div>
+    </div>
+
+    <div class="flex justify-between text-sm border-b py-2">
+      <div>
+        <p class="font-medium">Metro Flyover – Labor</p>
+        <p class="text-gray-500">Date: 18 Jan 2026</p>
+      </div>
+      <div class="text-right">
+        <p>৳ 1,200,000</p>
+        <p class="text-gray-500">Paid: ৳ 1,200,000</p>
+      </div>
+    </div>
+
+    <div class="flex justify-between text-sm py-2">
+      <div>
+        <p class="font-medium">Warehouse – Machinery</p>
+        <p class="text-gray-500">Date: 22 Jan 2026</p>
+      </div>
+      <div class="text-right">
+        <p>৳ 300,000</p>
+        <p class="text-gray-500">Paid: ৳ 300,000</p>
+      </div>
+    </div>
+
+  </section>
+
+</main>
+
+<!-- Floating Add Expense -->
+<a href="expense-add.html"
+ class="fixed bottom-20 right-4 bg-blue-600 text-white w-14 h-14 rounded-full flex items-center justify-center shadow-lg text-2xl">+</a>
+
+<!-- Bottom Tabs -->
+<nav class="fixed bottom-0 left-0 right-0 bg-white border-t shadow">
+  <div class="grid grid-cols-5 text-xs text-gray-600">
+    <a href="index.html" class="py-3 flex flex-col items-center">🏠<span>Home</span></a>
+    <a href="income.html" class="py-3 flex flex-col items-center">💰<span>Income</span></a>
+    <a href="expense.html" class="py-3 flex flex-col items-center text-blue-600 font-medium">💸<span>Expense</span></a>
+    <a href="projects.html" class="py-3 flex flex-col items-center">🏗️<span>Project</span></a>
+    <a href="reports.html" class="py-3 flex flex-col items-center">📊<span>Report</span></a>
+  </div>
+</nav>
+
+</body>
+</html>
