@@ -27,32 +27,19 @@
 
   <!-- Ongoing Projects -->
   <section>
-    <h2 class="text-sm font-semibold text-gray-600 mb-2">Ongoing Projects</h2>
-    <div class="space-y-3">
-      <a href="project.html?id=1" class="block bg-white rounded-xl shadow p-4 hover:bg-gray-50">
-        <div class="flex justify-between items-center">
-          <h3 class="font-medium">Metro Flyover – Dhaka</h3>
-          <span class="text-xs px-2 py-1 bg-green-100 text-green-700 rounded">Ongoing</span>
-        </div>
-        <p class="text-xs text-gray-500 mt-1">Advance: ৳ 1,000,000</p>
-        <p class="text-xs text-gray-500">Retention Pending: ৳ 850,000</p>
-      </a>
-    </div>
-  </section>
+  <h2 class="text-lg font-bold mt-4">Ongoing Projects</h2>
+  <div id="ongoingProjects" class="space-y-3">
+    <!-- Ongoing project cards injected here -->
+  </div>
+
+    </section>
 
   <!-- Completed Projects -->
   <section>
-    <h2 class="text-sm font-semibold text-gray-600 mb-2">Completed Projects</h2>
-    <div class="space-y-3">
-      <a href="project.html?id=2" class="block bg-white rounded-xl shadow p-4 hover:bg-gray-50 opacity-80">
-        <div class="flex justify-between items-center">
-          <h3 class="font-medium">Warehouse Construction – Gazipur</h3>
-          <span class="text-xs px-2 py-1 bg-gray-200 text-gray-600 rounded">Completed</span>
-        </div>
-        <p class="text-xs text-gray-500 mt-1">Advance: ৳ 500,000</p>
-        <p class="text-xs text-gray-500">Retention Pending: ৳ 120,000</p>
-      </a>
-    </div>
+    <h2 class="text-lg font-bold mt-6">Completed Projects</h2>
+  <div id="completedProjects" class="space-y-3">
+    <!-- Completed project cards injected here -->
+  </div>
   </section>
 
 </main>
@@ -72,5 +59,63 @@
   </div>
 </nav>
 
+<script>
+async function loadProjects() {
+  // Ongoing Projects
+  const { data: ongoing, error: ongoingError } = await supabase
+    .from('projects')
+    .select('*')
+    .eq('status', 'Ongoing')
+    .order('start_date', { ascending: true });
+
+  if (ongoingError) console.error('Error loading ongoing projects:', ongoingError);
+
+  const ongoingContainer = document.getElementById('ongoingProjects');
+  ongoingContainer.innerHTML = '';
+  ongoing?.forEach(p => {
+    const card = document.createElement('div');
+    card.className = "bg-white p-4 rounded-xl shadow cursor-pointer";
+    card.innerHTML = `
+      <h3 class="font-semibold">${p.name}</h3>
+      <p class="text-xs text-gray-500">Expected Completion: ${p.expected_completion || '-'}</p>
+      <p class="text-xs text-gray-500">Advance Payment: ৳ ${p.advance_payment || 0}</p>
+    `;
+    card.addEventListener('click', () => {
+      window.location.href = `project.html?id=${p.id}`;
+    });
+    ongoingContainer.appendChild(card);
+  });
+
+  // Completed Projects
+  const { data: completed, error: completedError } = await supabase
+    .from('projects')
+    .select('*')
+    .eq('status', 'Completed')
+    .order('actual_completion', { ascending: true });
+
+  if (completedError) console.error('Error loading completed projects:', completedError);
+
+  const completedContainer = document.getElementById('completedProjects');
+  completedContainer.innerHTML = '';
+  completed?.forEach(p => {
+    const card = document.createElement('div');
+    card.className = "bg-white p-4 rounded-xl shadow cursor-pointer";
+    card.innerHTML = `
+      <h3 class="font-semibold">${p.name}</h3>
+      <p class="text-xs text-gray-500">Actual Completion: ${p.actual_completion || '-'}</p>
+      <p class="text-xs text-gray-500">Advance Payment: ৳ ${p.advance_payment || 0}</p>
+    `;
+    card.addEventListener('click', () => {
+      window.location.href = `project.html?id=${p.id}`;
+    });
+    completedContainer.appendChild(card);
+  });
+}
+
+// Load projects on page load
+loadProjects();
+</script>
+
+  
 </body>
 </html>
