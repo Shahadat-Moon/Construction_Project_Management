@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Add Expense</title>
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-100 p-4">
+
+<!-- Header -->
+<header class="bg-white shadow px-4 py-3 flex justify-between items-center sticky top-0 z-10">
+  <a href="expense.html" class="text-blue-600 text-sm">← Back</a>
+  <h1 class="text-lg font-semibold">Add Expense</h1>
+  <div class="flex items-center space-x-2">
+    <p class="text-sm font-medium">M/S. S.R Suppliers</p>
+    <img src="logo.png" alt="Logo" class="h-8 w-auto cursor-pointer">
+  </div>
+</header>
+
+<main class="pb-24">
+
+<form class="space-y-4 bg-white p-4 rounded-xl shadow">
+
+  <!-- Project Selection -->
+  <div>
+    <label class="text-sm text-gray-600">Select Project</label>
+    <select class="w-full p-3 border rounded-lg">
+      <option value="">Metro Flyover – Ongoing</option>
+      <option value="">Warehouse – Ongoing</option>
+    </select>
+  </div>
+
+  <!-- Date & Expense Type -->
+  <input type="date" placeholder="Date" class="w-full p-3 rounded-lg border">
+  <select class="w-full p-3 border rounded-lg">
+    <option value="">Expense Type</option>
+    <option value="Labor">Labor</option>
+    <option value="Material">Material</option>
+    <option value="Machinery">Machinery</option>
+    <option value="Miscellaneous">Miscellaneous</option>
+  </select>
+
+  <!-- Amount -->
+  <input type="number" placeholder="Amount" class="w-full p-3 rounded-lg border">
+  <input type="number" placeholder="Paid Amount" class="w-full p-3 rounded-lg border" readonly>
+
+  <textarea placeholder="Details / Notes" class="w-full p-3 rounded-lg border"></textarea>
+
+  <button class="w-full bg-blue-600 text-white py-3 rounded-lg">Save Expense</button>
+
+</form>
+
+</main>
+
+<!-- Bottom Tabs -->
+<nav class="fixed bottom-0 left-0 right-0 bg-white border-t shadow">
+  <div class="grid grid-cols-5 text-xs text-gray-600">
+    <a href="index.html" class="py-3 flex flex-col items-center">🏠<span>Home</span></a>
+    <a href="income.html" class="py-3 flex flex-col items-center">💰<span>Income</span></a>
+    <a href="expense.html" class="py-3 flex flex-col items-center text-blue-600 font-medium">💸<span>Expense</span></a>
+    <a href="projects.html" class="py-3 flex flex-col items-center">🏗️<span>Project</span></a>
+    <a href="reports.html" class="py-3 flex flex-col items-center">📊<span>Report</span></a>
+  </div>
+</nav>
+
+<script>
+const amountInput = document.querySelector('input[placeholder="Amount"]');
+const paidInput = document.querySelector('input[placeholder="Paid Amount"]');
+
+amountInput.addEventListener('input', () => {
+  const amt = parseFloat(amountInput.value) || 0;
+  paidInput.value = amt; // For now, Paid = Amount (can adjust if tax/VAT later)
+});
+</script>
+
+</body>
+</html>
