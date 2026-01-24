@@ -5,7 +5,16 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Projects</title>
 <script src="https://cdn.tailwindcss.com"></script>
+<!-- Supabase v1 CDN -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@1.35.7/dist/supabase.min.js"></script>
+<script>
+  // Initialize Supabase (v1)
+  const SUPABASE_URL = 'https://sbqyxvxpeqipcuavryhb.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNicXl4dnhwZXFpcGN1YXZyeWhiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjkxNTk0NjcsImV4cCI6MjA4NDczNTQ2N30.XWbqg5fwC3TDFt-G79H-SGg-9WMdV08qkZ6OzdPK8f8';
+  const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+</script>
 </head>
+
 <body class="bg-slate-100 min-h-screen">
 
 <!-- Header -->
@@ -19,17 +28,13 @@
   <!-- Ongoing Projects -->
   <section>
     <h2 class="text-lg font-bold mt-4 mb-2">Ongoing Projects</h2>
-    <div id="ongoingProjects" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <!-- Ongoing project cards injected here -->
-    </div>
+    <div id="ongoingProjects" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
   </section>
 
   <!-- Completed Projects -->
   <section>
     <h2 class="text-lg font-bold mt-6 mb-2">Completed Projects</h2>
-    <div id="completedProjects" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <!-- Completed project cards injected here -->
-    </div>
+    <div id="completedProjects" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
   </section>
 
 </main>
@@ -49,14 +54,8 @@
   </div>
 </nav>
 
-<!-- Supabase Module Script -->
-<script type="module">
-  import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/supabase.min.js';
-
-  const SUPABASE_URL = 'https://sbqyxvxpeqipcuavryhb.supabase.co';
-  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNicXl4dnhwZXFpcGN1YXZyeWhiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjkxNTk0NjcsImV4cCI6MjA4NDczNTQ2N30.XWbqg5fwC3TDFt-G79H-SGg-9WMdV08qkZ6OzdPK8f8';
-  const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
+<!-- Projects JS -->
+<script>
   async function loadProjects() {
     try {
       // --- Ongoing Projects ---
@@ -71,7 +70,7 @@
       ongoingContainer.innerHTML = '';
       ongoing.forEach(p => {
         const card = document.createElement('div');
-        card.className = "bg-blue-50 border-l-4 border-blue-600 p-4 rounded-xl shadow cursor-pointer hover:shadow-lg transition-all";
+        card.className = "bg-blue-50 border-l-4 border-blue-600 p-4 rounded-xl shadow cursor-pointer hover:shadow-lg hover:bg-blue-100 transition-all";
         card.innerHTML = `
           <h3 class="font-semibold text-blue-800">${p.name}</h3>
           <p class="text-sm text-gray-600">Expected Completion: ${p.expected_completion || '-'}</p>
@@ -95,7 +94,7 @@
       completedContainer.innerHTML = '';
       completed.forEach(p => {
         const card = document.createElement('div');
-        card.className = "bg-green-50 border-l-4 border-green-600 p-4 rounded-xl shadow cursor-pointer hover:shadow-lg transition-all";
+        card.className = "bg-green-50 border-l-4 border-green-600 p-4 rounded-xl shadow cursor-pointer hover:shadow-lg hover:bg-green-100 transition-all";
         card.innerHTML = `
           <h3 class="font-semibold text-green-800">${p.name}</h3>
           <p class="text-sm text-gray-600">Actual Completion: ${p.actual_completion || '-'}</p>
@@ -112,7 +111,7 @@
     }
   }
 
-  // Load on page load
+  // Load projects on page load
   loadProjects();
 </script>
 
