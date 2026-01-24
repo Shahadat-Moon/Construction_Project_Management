@@ -53,12 +53,12 @@
   
   const SUPABASE_URL = 'https://sbqyxvxpeqipcuavryhb.supabase.co';
   const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNicXl4dnhwZXFpcGN1YXZyeWhiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjkxNTk0NjcsImV4cCI6MjA4NDczNTQ2N30.XWbqg5fwC3TDFt-G79H-SGg-9WMdV08qkZ6OzdPK8f8';
-  const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  const sup = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
   
   async function loadProjects() {
     try {
       // --- Ongoing Projects ---
-      const { data: ongoing, error: ongoingError } = await supabase
+      const { data: ongoing, error: ongoingError } = await sup
         .from('projects')
         .select('*')
         .eq('status', 'Ongoing')
@@ -82,7 +82,7 @@
       });
 
       // --- Completed Projects ---
-      const { data: completed, error: completedError } = await supabase
+      const { data: completed, error: completedError } = await sup
         .from('projects')
         .select('*')
         .eq('status', 'Completed')
