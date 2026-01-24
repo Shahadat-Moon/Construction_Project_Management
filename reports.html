@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reports</title>
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-100 p-4">
+
+<!-- Header -->
+<header class="bg-white shadow px-4 py-3 flex justify-between items-center sticky top-0 z-10">
+  <h1 class="text-lg font-semibold">Reports</h1>
+  <div class="relative">
+    <div class="flex items-center space-x-2">
+      <p class="text-sm font-medium">M/S. S.R Suppliers</p>
+      <img id="companyBtn" src="logo.png" alt="Logo" class="h-8 w-auto cursor-pointer">
+    </div>
+    <div id="companyDropdown" class="absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-lg p-3 hidden">
+      <p class="text-sm font-medium">M/S. S.R Suppliers</p>
+      <p class="text-xs text-gray-500">Phone: 0123456789</p>
+      <p class="text-xs text-gray-500">Email: info@srsuppliers.com</p>
+    </div>
+  </div>
+</header>
+
+<main class="space-y-4 pb-24">
+
+  <!-- Summary Cards -->
+  <div class="grid grid-cols-2 gap-3">
+    <div class="bg-white p-4 rounded-xl shadow">
+      <p class="text-xs text-gray-500">Total Income</p>
+      <p class="font-bold">৳ 8,500,000</p>
+    </div>
+    <div class="bg-white p-4 rounded-xl shadow">
+      <p class="text-xs text-gray-500">Total Expense</p>
+      <p class="font-bold text-red-600">৳ 6,200,000</p>
+    </div>
+    <div class="bg-white p-4 rounded-xl shadow">
+      <p class="text-xs text-gray-500">Total Received</p>
+      <p class="font-bold text-green-600">৳ 7,650,000</p>
+    </div>
+    <div class="bg-white p-4 rounded-xl shadow">
+      <p class="text-xs text-gray-500">Total Paid</p>
+      <p class="font-bold text-green-600">৳ 5,950,000</p>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <section class="bg-white p-4 rounded-xl shadow space-y-2">
+    <h2 class="font-semibold mb-2">Filter Reports</h2>
+    <select class="w-full p-3 border rounded-lg">
+      <option value="">All Projects</option>
+      <option value="">Metro Flyover</option>
+      <option value="">Warehouse Construction</option>
+    </select>
+    <div class="grid grid-cols-2 gap-2">
+      <input type="month" class="w-full p-3 border rounded-lg" placeholder="From">
+      <input type="month" class="w-full p-3 border rounded-lg" placeholder="To">
+    </div>
+    <button class="w-full bg-blue-600 text-white py-2 rounded-lg">Apply Filter</button>
+  </section>
+
+  <!-- Report Table -->
+  <section class="bg-white p-4 rounded-xl shadow">
+    <h2 class="font-semibold mb-2">Income & Expense Entries</h2>
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm border-collapse">
+        <thead class="bg-gray-100">
+          <tr>
+            <th class="p-2 text-left border">Project</th>
+            <th class="p-2 text-left border">Type</th>
+            <th class="p-2 text-left border">Date</th>
+            <th class="p-2 text-right border">Gross / Amount</th>
+            <th class="p-2 text-right border">VAT / Tax</th>
+            <th class="p-2 text-right border">Retention / Paid</th>
+            <th class="p-2 text-right border">Received / Paid</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="border-b">
+            <td class="p-2">Metro Flyover</td>
+            <td class="p-2">Income</td>
+            <td class="p-2">15 Jan 2026</td>
+            <td class="p-2 text-right">৳ 3,000,000</td>
+            <td class="p-2 text-right">৳ 300,000</td>
+            <td class="p-2 text-right">৳ 300,000</td>
+            <td class="p-2 text-right">৳ 2,700,000</td>
+          </tr>
+          <tr class="border-b">
+            <td class="p-2">Metro Flyover</td>
+            <td class="p-2">Expense</td>
+            <td class="p-2">18 Jan 2026</td>
+            <td class="p-2 text-right">৳ 1,200,000</td>
+            <td class="p-2 text-right">৳ 0</td>
+            <td class="p-2 text-right">৳ 1,200,000</td>
+            <td class="p-2 text-right">৳ 1,200,000</td>
+          </tr>
+          <tr>
+            <td class="p-2">Warehouse Construction</td>
+            <td class="p-2">Income</td>
+            <td class="p-2">20 Jan 2026</td>
+            <td class="p-2 text-right">৳ 500,000</td>
+            <td class="p-2 text-right">৳ 20,000</td>
+            <td class="p-2 text-right">৳ 20,000</td>
+            <td class="p-2 text-right">৳ 480,000</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Download / Print Buttons -->
+    <div class="flex justify-end space-x-2 mt-3">
+      <button class="bg-green-600 text-white py-2 px-4 rounded-lg">Download PDF</button>
+      <button class="bg-blue-600 text-white py-2 px-4 rounded-lg">Print</button>
+    </div>
+  </section>
+
+</main>
+
+<!-- Bottom Tabs -->
+<nav class="fixed bottom-0 left-0 right-0 bg-white border-t shadow">
+  <div class="grid grid-cols-5 text-xs text-gray-600">
+    <a href="index.html" class="py-3 flex flex-col items-center">🏠<span>Home</span></a>
+    <a href="income.html" class="py-3 flex flex-col items-center">💰<span>Income</span></a>
+    <a href="expense.html" class="py-3 flex flex-col items-center">💸<span>Expense</span></a>
+    <a href="projects.html" class="py-3 flex flex-col items-center">🏗️<span>Project</span></a>
+    <a href="reports.html" class="py-3 flex flex-col items-center text-blue-600 font-medium">📊<span>Report</span></a>
+  </div>
+</nav>
+
+<script>
+const btn = document.getElementById("companyBtn");
+const dropdown = document.getElementById("companyDropdown");
+
+btn.addEventListener("click", () => {
+  dropdown.classList.toggle("hidden");
+});
+</script>
+
+</body>
+</html>
