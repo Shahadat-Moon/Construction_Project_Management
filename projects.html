@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Projects</title>
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-100">
+
+<!-- Header -->
+<header class="bg-white shadow px-4 py-3 flex justify-between items-center sticky top-0 z-10">
+  <h1 class="text-lg font-semibold">Projects</h1>
+  <img src="logo.png" alt="Company Logo" class="h-8 w-auto cursor-pointer">
+</header>
+
+<main class="p-4 pb-24 space-y-6">
+
+  <!-- Ongoing Projects -->
+  <section>
+    <h2 class="text-sm font-semibold text-gray-600 mb-2">Ongoing Projects</h2>
+    <div class="space-y-3">
+      <a href="project.html?id=1" class="block bg-white rounded-xl shadow p-4 hover:bg-gray-50">
+        <div class="flex justify-between items-center">
+          <h3 class="font-medium">Metro Flyover – Dhaka</h3>
+          <span class="text-xs px-2 py-1 bg-green-100 text-green-700 rounded">Ongoing</span>
+        </div>
+        <p class="text-xs text-gray-500 mt-1">Advance: ৳ 1,000,000</p>
+        <p class="text-xs text-gray-500">Retention Pending: ৳ 850,000</p>
+      </a>
+    </div>
+  </section>
+
+  <!-- Completed Projects -->
+  <section>
+    <h2 class="text-sm font-semibold text-gray-600 mb-2">Completed Projects</h2>
+    <div class="space-y-3">
+      <a href="project.html?id=2" class="block bg-white rounded-xl shadow p-4 hover:bg-gray-50 opacity-80">
+        <div class="flex justify-between items-center">
+          <h3 class="font-medium">Warehouse Construction – Gazipur</h3>
+          <span class="text-xs px-2 py-1 bg-gray-200 text-gray-600 rounded">Completed</span>
+        </div>
+        <p class="text-xs text-gray-500 mt-1">Advance: ৳ 500,000</p>
+        <p class="text-xs text-gray-500">Retention Pending: ৳ 120,000</p>
+      </a>
+    </div>
+  </section>
+
+</main>
+
+<!-- Floating Add Project -->
+<a href="project-add.html"
+ class="fixed bottom-20 right-4 bg-blue-600 text-white w-14 h-14 rounded-full flex items-center justify-center shadow-lg text-2xl">+</a>
+
+<!-- Bottom Tabs -->
+<nav class="fixed bottom-0 left-0 right-0 bg-white border-t shadow">
+  <div class="grid grid-cols-5 text-xs text-gray-600">
+    <a href="index.html" class="py-3 flex flex-col items-center">🏠<span>Home</span></a>
+    <a href="income.html" class="py-3 flex flex-col items-center">💰<span>Income</span></a>
+    <a href="expense.html" class="py-3 flex flex-col items-center">💸<span>Expense</span></a>
+    <a href="projects.html" class="py-3 flex flex-col items-center text-blue-600 font-medium">🏗️<span>Project</span></a>
+    <a href="reports.html" class="py-3 flex flex-col items-center">📊<span>Report</span></a>
+  </div>
+</nav>
+
+</body>
+</html>
