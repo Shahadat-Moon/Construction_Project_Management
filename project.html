@@ -4,159 +4,152 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Project Details</title>
+
 <script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.7/dist/umd/supabase.min.js"></script>
 </head>
 
 <body class="bg-slate-100 min-h-screen">
 
 <!-- HEADER -->
-<header class="bg-white shadow px-4 py-3 flex justify-between items-center sticky top-0 z-10">
-  <div>
-    <h1 id="projectName" class="text-lg font-semibold">Project</h1>
-    <p id="projectId" class="text-xs text-gray-500"></p>
-  </div>
-  <img src="logo.jpg" class="h-8"/>
+<header class="bg-white shadow px-4 py-3 sticky top-0 z-10">
+  <h1 id="projectName" class="text-lg font-semibold">Project</h1>
 </header>
 
-<main class="p-4 pb-28 space-y-6">
+<main class="p-4 space-y-6 pb-28">
 
-  <!-- STATUS CARD -->
-  <section class="bg-white rounded-xl shadow p-4 flex justify-between items-center">
-    <div>
-      <p class="text-xs text-gray-500">Project Status</p>
-      <p id="projectStatus" class="font-semibold text-blue-600">Ongoing</p>
-    </div>
-    <button id="completeBtn"
-      class="px-4 py-2 text-sm bg-green-600 text-white rounded-lg hidden">
-      Mark Completed
-    </button>
-  </section>
+<!-- SUMMARY -->
+<section class="grid grid-cols-2 gap-4">
+  <div class="bg-white p-4 rounded-xl shadow">
+    <p class="text-xs text-gray-500">Total Bill</p>
+    <p id="totalBill" class="font-bold text-lg">৳ 0</p>
+  </div>
 
-  <!-- PROJECT INFO -->
-  <section class="bg-white rounded-xl shadow p-4 space-y-3">
-    <h2 class="font-semibold text-gray-700">Project Information</h2>
+  <div class="bg-white p-4 rounded-xl shadow">
+    <p class="text-xs text-gray-500">Received</p>
+    <p id="totalReceived" class="font-bold text-lg text-green-700">৳ 0</p>
+  </div>
 
-    <div class="grid grid-cols-2 gap-3 text-sm">
-      <div>
-        <p class="text-gray-500">Authority</p>
-        <p id="authority">-</p>
-      </div>
-      <div>
-        <p class="text-gray-500">Location</p>
-        <p id="location">-</p>
-      </div>
-      <div>
-        <p class="text-gray-500">Contract Value</p>
-        <p id="contractValue">-</p>
-      </div>
-      <div>
-        <p class="text-gray-500">Advance Payment</p>
-        <p id="advancePayment">-</p>
-      </div>
-      <div>
-        <p class="text-gray-500">Expected Completion</p>
-        <p id="expectedCompletion">-</p>
-      </div>
-      <div>
-        <p class="text-gray-500">Actual Completion</p>
-        <p id="actualCompletion">-</p>
-      </div>
-    </div>
-  </section>
+  <div class="bg-white p-4 rounded-xl shadow">
+    <p class="text-xs text-gray-500">Expense</p>
+    <p id="totalExpense" class="font-bold text-lg text-red-700">৳ 0</p>
+  </div>
 
-  <!-- FINANCIAL SUMMARY (PLACEHOLDER) -->
-  <section class="bg-white rounded-xl shadow p-4 space-y-3">
-    <h2 class="font-semibold text-gray-700">Financial Summary</h2>
-    <div class="grid grid-cols-2 gap-3 text-sm">
-      <div>
-        <p class="text-gray-500">Total Bill</p>
-        <p>—</p>
-      </div>
-      <div>
-        <p class="text-gray-500">Total Received</p>
-        <p>—</p>
-      </div>
-      <div>
-        <p class="text-gray-500">Retention</p>
-        <p>—</p>
-      </div>
-      <div>
-        <p class="text-gray-500">Balance</p>
-        <p>—</p>
-      </div>
-    </div>
-  </section>
+  <div class="bg-white p-4 rounded-xl shadow">
+    <p class="text-xs text-gray-500">Balance</p>
+    <p id="balance" class="font-bold text-lg text-blue-700">৳ 0</p>
+  </div>
+</section>
+
+<!-- RETENTION -->
+<section class="bg-yellow-50 border-l-4 border-yellow-500 p-4 rounded-xl shadow">
+  <p class="text-sm text-gray-600">Retention Money</p>
+  <p id="retention" class="font-bold text-lg">৳ 0</p>
+</section>
+
+<!-- LAST INCOME -->
+<section class="bg-white p-4 rounded-xl shadow">
+  <h2 class="font-semibold mb-2">Last 5 Income</h2>
+  <div id="incomeList" class="space-y-2 text-sm"></div>
+</section>
+
+<!-- LAST EXPENSE -->
+<section class="bg-white p-4 rounded-xl shadow">
+  <h2 class="font-semibold mb-2">Last 5 Expense</h2>
+  <div id="expenseList" class="space-y-2 text-sm"></div>
+</section>
 
 </main>
 
-<!-- BOTTOM NAV -->
-<nav class="fixed bottom-0 left-0 right-0 bg-white border-t shadow">
-  <div class="grid grid-cols-5 text-xs text-gray-600">
-    <a href="index.html" class="py-3 flex flex-col items-center">🏠<span>Home</span></a>
-    <a href="income.html" class="py-3 flex flex-col items-center">💰<span>Income</span></a>
-    <a href="expense.html" class="py-3 flex flex-col items-center">💸<span>Expense</span></a>
-    <a href="projects.html" class="py-3 flex flex-col items-center text-blue-600 font-medium">🏗️<span>Project</span></a>
-    <a href="reports.html" class="py-3 flex flex-col items-center">📊<span>Report</span></a>
-  </div>
-</nav>
+<!-- JS -->
+<script>
+const SUPABASE_URL = "https://sbqyxvxpeqipcuavryhb.supabase.co";
+const SUPABASE_ANON_KEY = "YOUR_ANON_KEY_HERE";
+const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-<!-- SUPABASE + LOGIC -->
-<script type="module">
-import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
-
-const supabase = createClient(
-  'https://sbqyxvxpeqipcuavryhb.supabase.co',
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNicXl4dnhwZXFpcGN1YXZyeWhiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjkxNTk0NjcsImV4cCI6MjA4NDczNTQ2N30.XWbqg5fwC3TDFt-G79H-SGg-9WMdV08qkZ6OzdPK8f8'
-)
-
-const projectId = new URLSearchParams(window.location.search).get('id')
+const projectId = new URLSearchParams(window.location.search).get("id");
 
 async function loadProject() {
-  const { data, error } = await supabase
-    .from('projects')
-    .select('*')
-    .eq('id', projectId)
-    .single()
+  const { data } = await supabase
+    .from("projects")
+    .select("*")
+    .eq("id", projectId)
+    .single();
 
-  if (error) {
-    alert('Project not found')
-    return
-  }
-
-  document.getElementById('projectName').innerText = data.name
-  document.getElementById('projectId').innerText = `Project ID: ${data.id}`
-  document.getElementById('projectStatus').innerText = data.status
-
-  document.getElementById('authority').innerText = data.authority || '-'
-  document.getElementById('location').innerText = data.location || '-'
-  document.getElementById('contractValue').innerText = `৳ ${data.contract_value || 0}`
-  document.getElementById('advancePayment').innerText = `৳ ${data.advance_payment || 0}`
-  document.getElementById('expectedCompletion').innerText = data.expected_completion || '-'
-  document.getElementById('actualCompletion').innerText = data.actual_completion || '-'
-
-  if (data.status === 'Ongoing') {
-    document.getElementById('completeBtn').classList.remove('hidden')
-  }
+  document.getElementById("projectName").innerText = data.name;
+  document.getElementById("retention").innerText = `৳ ${data.retention || 0}`;
 }
 
-document.getElementById('completeBtn').onclick = async () => {
-  if (!confirm('Mark this project as completed?')) return
+async function loadSummary() {
+  const { data: income } = await supabase
+    .from("income")
+    .select("bill_amount, received_amount")
+    .eq("project_id", projectId);
 
-  const { error } = await supabase
-    .from('projects')
-    .update({
-      status: 'Completed',
-      actual_completion: new Date().toISOString().split('T')[0]
-    })
-    .eq('id', projectId)
+  const { data: expense } = await supabase
+    .from("expense")
+    .select("amount")
+    .eq("project_id", projectId);
 
-  if (!error) {
-    alert('Project marked as completed')
-    loadProject()
-  }
+  let totalBill = 0, totalReceived = 0, totalExpense = 0;
+
+  income?.forEach(i => {
+    totalBill += Number(i.bill_amount || 0);
+    totalReceived += Number(i.received_amount || 0);
+  });
+
+  expense?.forEach(e => totalExpense += Number(e.amount || 0));
+
+  document.getElementById("totalBill").innerText = `৳ ${totalBill}`;
+  document.getElementById("totalReceived").innerText = `৳ ${totalReceived}`;
+  document.getElementById("totalExpense").innerText = `৳ ${totalExpense}`;
+  document.getElementById("balance").innerText = `৳ ${totalReceived - totalExpense}`;
 }
 
-loadProject()
+async function loadIncome() {
+  const { data } = await supabase
+    .from("income")
+    .select("*")
+    .eq("project_id", projectId)
+    .order("bill_date", { ascending: false })
+    .limit(5);
+
+  const box = document.getElementById("incomeList");
+  box.innerHTML = "";
+
+  data?.forEach(i => {
+    box.innerHTML += `
+      <div class="flex justify-between border-b pb-1">
+        <span>Bill ${i.bill_no}</span>
+        <span class="text-green-700 font-medium">৳ ${i.received_amount}</span>
+      </div>`;
+  });
+}
+
+async function loadExpense() {
+  const { data } = await supabase
+    .from("expense")
+    .select("*")
+    .eq("project_id", projectId)
+    .order("expense_date", { ascending: false })
+    .limit(5);
+
+  const box = document.getElementById("expenseList");
+  box.innerHTML = "";
+
+  data?.forEach(e => {
+    box.innerHTML += `
+      <div class="flex justify-between border-b pb-1">
+        <span>${e.description}</span>
+        <span class="text-red-700 font-medium">৳ ${e.amount}</span>
+      </div>`;
+  });
+}
+
+loadProject();
+loadSummary();
+loadIncome();
+loadExpense();
 </script>
 
 </body>
