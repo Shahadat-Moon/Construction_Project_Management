@@ -5,7 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Dashboard - M/S S.R. Suppliers</title>
 <script src="https://cdn.tailwindcss.com"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/supabase.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+
 </head>
 <body class="bg-gray-100">
 
@@ -106,10 +107,11 @@
   menuBtn.addEventListener('click', toggleSidebar);
 
   // Initialize Supabase AFTER library is loaded
-  const SUPABASE_URL = 'https://sbqyxvxpeqipcuavryhb.supabase.co';
-  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNicXl4dnhwZXFpcGN1YXZyeWhiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjkxNTk0NjcsImV4cCI6MjA4NDczNTQ2N30.XWbqg5fwC3TDFt-G79H-SGg-9WMdV08qkZ6OzdPK8f8'; // replace with your anon key
-  const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
+  const supabaseClient = window.supabase.createClient(
+    'https://sbqyxvxpeqipcuavryhb.supabase.co',
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNicXl4dnhwZXFpcGN1YXZyeWhiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjkxNTk0NjcsImV4cCI6MjA4NDczNTQ2N30.XWbqg5fwC3TDFt-G79H-SGg-9WMdV08qkZ6OzdPK8f8'
+  );
+  
   async function loadDashboard(){
     try {
       // last 30 days
