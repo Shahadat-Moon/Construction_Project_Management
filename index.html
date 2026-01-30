@@ -42,8 +42,8 @@
 <!-- Main Content -->
 <div id="main" class="p-6 space-y-8">
 
-  <!-- Top 6 Summary Cards (2 columns x 3 rows on mobile) -->
-  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+  <!-- Top 6 Summary Cards (2 columns on mobile, 3 columns large) -->
+  <div class="grid grid-cols-2 lg:grid-cols-3 gap-6">
     <div id="card-income" class="bg-blue-50 p-6 rounded-xl shadow flex flex-col justify-between">
       <p class="text-gray-600 font-medium">Income (Last 30 Days)</p>
       <p id="income-value" class="text-2xl font-bold text-blue-700">৳ 0</p>
@@ -73,12 +73,12 @@
   <!-- Projects Section -->
   <section>
     <h2 class="text-xl font-bold text-gray-800 mb-4">Ongoing Projects</h2>
-    <div id="ongoingProjects" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+    <div id="ongoingProjects" class="grid grid-cols-2 lg:grid-cols-3 gap-6"></div>
   </section>
 
   <section>
     <h2 class="text-xl font-bold text-gray-800 mt-8 mb-4">Completed Projects</h2>
-    <div id="completedProjects" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+    <div id="completedProjects" class="grid grid-cols-2 lg:grid-cols-3 gap-6"></div>
   </section>
 
 </div>
@@ -105,41 +105,40 @@
   }
   menuBtn.addEventListener('click', toggleSidebar);
 
-  // Initialize Supabase (only once!)
+  // Initialize Supabase AFTER library is loaded
   const SUPABASE_URL = 'https://sbqyxvxpeqipcuavryhb.supabase.co';
   const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNicXl4dnhwZXFpcGN1YXZyeWhiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjkxNTk0NjcsImV4cCI6MjA4NDczNTQ2N30.XWbqg5fwC3TDFt-G79H-SGg-9WMdV08qkZ6OzdPK8f8'; // replace with your anon key
   const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-  async function loadDashboard() {
+  async function loadDashboard(){
     try {
       // last 30 days
       const date30 = new Date();
       date30.setDate(date30.getDate()-30);
       const dateStr = date30.toISOString().split('T')[0];
 
-      // Income last 30 days
+      // Income & Expense
       const { data: incomeData } = await supabaseClient.from('income').select('received_amount');
       const incomeSum = incomeData.reduce((acc,i)=>acc+parseFloat(i.received_amount||0),0);
-      document.getElementById('income-value').innerText = '৳ '+incomeSum.toLocaleString();
+      document.getElementById('income-value').innerText='৳ '+incomeSum.toLocaleString();
 
-      // Expense last 30 days
       const { data: expenseData } = await supabaseClient.from('expense').select('paid_amount');
       const expenseSum = expenseData.reduce((acc,e)=>acc+parseFloat(e.paid_amount||0),0);
-      document.getElementById('expense-value').innerText = '৳ '+expenseSum.toLocaleString();
+      document.getElementById('expense-value').innerText='৳ '+expenseSum.toLocaleString();
 
       // Projects
       const { data: ongoingProjects } = await supabaseClient.from('projects').select('*').eq('status','Ongoing');
       const { data: completedProjects } = await supabaseClient.from('projects').select('*').eq('status','Completed');
 
-      document.getElementById('ongoing-count').innerText = ongoingProjects.length;
-      document.getElementById('completed-count').innerText = completedProjects.length;
+      document.getElementById('ongoing-count').innerText=ongoingProjects.length;
+      document.getElementById('completed-count').innerText=completedProjects.length;
 
       const contractTotal = ongoingProjects.reduce((acc,p)=>acc+parseFloat(p.contract_value||0),0);
-      document.getElementById('contract-value').innerText = '৳ '+contractTotal.toLocaleString();
+      document.getElementById('contract-value').innerText='৳ '+contractTotal.toLocaleString();
 
       const { data: billData } = await supabaseClient.from('income').select('received_amount,project_id');
       const billReceived = billData.reduce((acc,i)=>acc+parseFloat(i.received_amount||0),0);
-      document.getElementById('bill-received-value').innerText = '৳ '+billReceived.toLocaleString();
+      document.getElementById('bill-received-value').innerText='৳ '+billReceived.toLocaleString();
 
       // Render project cards
       const ongoingContainer = document.getElementById('ongoingProjects');
