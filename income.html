@@ -4,88 +4,96 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Income</title>
+
 <script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 </head>
-<body class="bg-slate-100 p-4">
 
-<!-- Header -->
-<header class="bg-white shadow px-4 py-3 flex justify-between items-center sticky top-0 z-10">
-  <h1 class="text-lg font-semibold">Income</h1>
-  <img src="logo.png" alt="Logo" class="h-8 w-auto cursor-pointer">
-</header>
+<body class="bg-slate-100 min-h-screen pb-24">
 
-<main class="space-y-4 pb-24">
-
-  <!-- Summary Cards -->
-  <div class="grid grid-cols-2 gap-3">
-    <div class="bg-white p-4 rounded-xl shadow">
-      <p class="text-xs text-gray-500">Total Income</p>
-      <p class="font-bold">৳ 8,500,000</p>
-    </div>
-    <div class="bg-white p-4 rounded-xl shadow">
-      <p class="text-xs text-gray-500">Total Received</p>
-      <p class="font-bold text-green-600">৳ 7,650,000</p>
+<!-- HEADER -->
+<header class="bg-white shadow sticky top-0 z-10">
+  <div class="px-4 py-3 grid grid-cols-3 items-center">
+    <button onclick="history.back()" class="text-blue-600 text-sm text-left">Back</button>
+    <h1 class="text-lg font-semibold text-center">Income</h1>
+    <div class="flex justify-end">
+      <img src="logo.jpg" class="h-8" alt="Company Logo">
     </div>
   </div>
+</header>
 
-  <!-- Recent Income Entries -->
-  <section class="bg-white p-4 rounded-xl shadow space-y-2">
-    <h2 class="font-semibold mb-2">Recent Income Entries</h2>
+<main class="p-4 max-w-xl mx-auto space-y-6">
 
-    <div class="flex justify-between text-sm border-b py-2">
-      <div>
-        <p class="font-medium">Metro Flyover – 2nd Bill</p>
-        <p class="text-gray-500">Date: 15 Jan 2026</p>
-      </div>
-      <div class="text-right">
-        <p>৳ 3,000,000</p>
-        <p class="text-gray-500">Received: ৳ 2,700,000</p>
-        <p class="text-red-600 text-xs">Retention: ৳ 300,000</p>
-      </div>
-    </div>
-
-    <div class="flex justify-between text-sm border-b py-2">
-      <div>
-        <p class="font-medium">Metro Flyover – 3rd Bill</p>
-        <p class="text-gray-500">Date: 10 Feb 2026</p>
-      </div>
-      <div class="text-right">
-        <p>৳ 3,500,000</p>
-        <p class="text-gray-500">Received: ৳ 3,150,000</p>
-        <p class="text-red-600 text-xs">Retention: ৳ 350,000</p>
-      </div>
-    </div>
-
-    <div class="flex justify-between text-sm py-2">
-      <div>
-        <p class="font-medium">Warehouse Construction – 1st Bill</p>
-        <p class="text-gray-500">Date: 20 Jan 2026</p>
-      </div>
-      <div class="text-right">
-        <p>৳ 500,000</p>
-        <p class="text-gray-500">Received: ৳ 480,000</p>
-        <p class="text-red-600 text-xs">Retention: ৳ 20,000</p>
-      </div>
-    </div>
-
-  </section>
+  <h2 class="text-lg font-semibold">Recent Income</h2>
+  <div id="incomeContainer" class="space-y-4"></div>
 
 </main>
 
 <!-- Floating Add Income -->
 <a href="income-add.html"
- class="fixed bottom-20 right-4 bg-blue-600 text-white w-14 h-14 rounded-full flex items-center justify-center shadow-lg text-2xl">+</a>
+   class="fixed bottom-24 right-4 bg-green-600 text-white w-16 h-16 rounded-full flex items-center justify-center shadow-lg text-3xl hover:bg-green-700 transition-all">+</a>
 
 <!-- Bottom Tabs -->
 <nav class="fixed bottom-0 left-0 right-0 bg-white border-t shadow">
   <div class="grid grid-cols-5 text-xs text-gray-600">
     <a href="index.html" class="py-3 flex flex-col items-center">🏠<span>Home</span></a>
-    <a href="income.html" class="py-3 flex flex-col items-center text-blue-600 font-medium">💰<span>Income</span></a>
+    <a href="income.html" class="py-3 flex flex-col items-center text-green-600 font-medium">💰<span>Income</span></a>
     <a href="expense.html" class="py-3 flex flex-col items-center">💸<span>Expense</span></a>
     <a href="projects.html" class="py-3 flex flex-col items-center">🏗️<span>Project</span></a>
     <a href="reports.html" class="py-3 flex flex-col items-center">📊<span>Report</span></a>
   </div>
 </nav>
+
+<script>
+  const supabase = window.supabase.createClient(
+    'https://sbqyxvxpeqipcuavryhb.supabase.co',
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNicXl4dnhwZXFpcGN1YXZyeWhiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjkxNTk0NjcsImV4cCI6MjA4NDczNTQ2N30.XWbqg5fwC3TDFt-G79H-SGg-9WMdV08qkZ6OzdPK8f8'
+  );
+
+  async function loadIncome() {
+    const { data, error } = await supabase
+      .from('income')
+      .select('*, projects(name)')
+      .order('date', { ascending: false })
+      .limit(10);
+
+    if (error) {
+      console.error(error)
+      return
+    }
+
+    const container = document.getElementById('incomeContainer')
+    container.innerHTML = ''
+
+    // Group by project
+    const grouped = {}
+    data.forEach(i => {
+      const projectName = i.projects?.name || i.project_id
+      if (!grouped[projectName]) grouped[projectName] = []
+      grouped[projectName].push(i)
+    })
+
+    for (let projectName in grouped) {
+      const projectDiv = document.createElement('div')
+      projectDiv.className = "bg-white p-4 rounded-xl shadow space-y-2"
+      projectDiv.innerHTML = `<h3 class="font-semibold text-blue-700">${projectName}</h3>`
+
+      let rows = grouped[projectName].map(e => `
+        <div class="grid grid-cols-4 gap-2 border-b pb-2">
+          <div class="text-gray-500">${new Date(e.date).toLocaleDateString('en-US',{month:'long',day:'numeric'})}</div>
+          <div>${e.bill_number || '-'}</div>
+          <div class="text-red-600 font-medium">৳ ${e.gross_amount}</div>
+          <div class="text-gray-500">${e.notes || '-'}</div>
+        </div>
+      `).join('')
+
+      projectDiv.innerHTML += rows
+      container.appendChild(projectDiv)
+    }
+  }
+
+  loadIncome()
+</script>
 
 </body>
 </html>
