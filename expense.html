@@ -18,12 +18,11 @@
       Back
     </button>
 
-    <div class="flex justify-center items-center gap-2">
-      <img src="logo.jpg" class="h-7" alt="Company Logo">
-      <h1 class="text-lg font-semibold">Expenses</h1>
-    </div>
+    <h1 class="text-lg font-semibold text-center">Expenses</h1>
 
-    <div></div>
+    <div class="flex justify-end">
+      <img src="logo.jpg" class="h-8" alt="Company Logo">
+    </div>
   </div>
 </header>
 
@@ -33,7 +32,7 @@
   <div id="expenseContainer" class="space-y-6"></div>
 
   <p id="emptyState" class="hidden text-center text-gray-500 mt-16">
-    No expense data for last 30 days
+    No expense data for the last 30 days
   </p>
 
 </main>
@@ -69,11 +68,12 @@
   }
 
   async function loadExpenses() {
-    const { data, error } = await supabase
+
+    // Fetch expenses (last 30 days, latest first)
+    const { data: expenses, error } = await supabase
       .from('expense')
       .select('*')
       .gte('date', last30DaysDate())
-      .order('project_id', { ascending: true })
       .order('date', { ascending: false })
 
     if (error) {
@@ -85,14 +85,24 @@
     const empty = document.getElementById('emptyState')
     container.innerHTML = ''
 
-    if (!data || data.length === 0) {
+    if (!expenses || expenses.length === 0) {
       empty.classList.remove('hidden')
       return
     }
 
-    // Group by project_id
+    // Fetch project names
+    const projectIds = [...new Set(expenses.map(e => e.project_id))]
+    const { data: projects } = await supabase
+      .from('projects')
+      .select('id, name')
+      .in('id', projectIds)
+
+    const projectMap = {}
+    projects?.forEach(p => projectMap[p.id] = p.name)
+
+    // Group expenses by project
     const grouped = {}
-    data.forEach(e => {
+    expenses.forEach(e => {
       if (!grouped[e.project_id]) grouped[e.project_id] = []
       grouped[e.project_id].push(e)
     })
@@ -101,8 +111,9 @@
       const card = document.createElement('div')
       card.className = 'bg-white rounded-2xl shadow overflow-hidden'
 
-      let rows = grouped[projectId].map(e => `
+      const rows = grouped[projectId].map(e => `
         <tr class="border-b last:border-none">
+          <td class="py-2 text-gray-500">${e.date}</td>
           <td class="py-2">${e.type}</td>
           <td class="py-2 text-red-600 font-medium">৳ ${e.amount}</td>
           <td class="py-2 text-gray-500">${e.notes || '-'}</td>
@@ -110,14 +121,16 @@
       `).join('')
 
       card.innerHTML = `
-        <div class="bg-blue-600 text-white px-4 py-2 font-semibold">
-          Project: ${projectId}
+        <div class="bg-slate-700 text-white px-4 py-3">
+          <p class="font-semibold">${projectMap[projectId] || projectId}</p>
+          <p class="text-xs text-slate-200">Project ID: ${projectId}</p>
         </div>
 
         <div class="p-4 overflow-x-auto">
           <table class="w-full text-sm">
             <thead>
               <tr class="text-left text-gray-500 border-b">
+                <th class="pb-2">Date</th>
                 <th class="pb-2">Type</th>
                 <th class="pb-2">Amount</th>
                 <th class="pb-2">Notes</th>
