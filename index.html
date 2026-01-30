@@ -4,13 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Dashboard - M/S S.R. Suppliers</title>
-
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/supabase.min.js"></script>
-
-<style>
-  body { font-family: 'Inter', sans-serif; }
-</style>
 </head>
 <body class="bg-gray-100">
 
@@ -30,7 +25,7 @@
     Menu
     <button onclick="toggleSidebar()" class="text-white text-lg font-bold">&times;</button>
   </div>
-  <nav class="mt-6">
+  <nav class="mt-6 space-y-1">
     <a href="index.html" class="block px-6 py-3 hover:bg-blue-800 rounded bg-blue-800">🏠 Dashboard</a>
     <a href="projects.html" class="block px-6 py-3 hover:bg-blue-800 rounded mt-1">🏗️ Projects</a>
     <a href="project-add.html" class="block px-6 py-3 hover:bg-blue-800 rounded mt-1">➕ Add Project</a>
@@ -47,7 +42,7 @@
 <!-- Main Content -->
 <div id="main" class="p-6 space-y-8">
 
-  <!-- Top 6 Summary Cards (2 cols x 3 rows mobile-friendly) -->
+  <!-- Top 6 Summary Cards (2 columns x 3 rows on mobile) -->
   <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
     <div id="card-income" class="bg-blue-50 p-6 rounded-xl shadow flex flex-col justify-between">
       <p class="text-gray-600 font-medium">Income (Last 30 Days)</p>
@@ -78,15 +73,26 @@
   <!-- Projects Section -->
   <section>
     <h2 class="text-xl font-bold text-gray-800 mb-4">Ongoing Projects</h2>
-    <div id="ongoingProjects" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+    <div id="ongoingProjects" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
   </section>
 
   <section>
     <h2 class="text-xl font-bold text-gray-800 mt-8 mb-4">Completed Projects</h2>
-    <div id="completedProjects" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+    <div id="completedProjects" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
   </section>
 
 </div>
+
+<!-- Bottom Tabs -->
+<nav class="fixed bottom-0 left-0 right-0 bg-white border-t shadow z-20">
+  <div class="grid grid-cols-5 text-xs text-gray-600">
+    <a href="index.html" class="py-3 flex flex-col items-center text-blue-600 font-medium">🏠<span>Home</span></a>
+    <a href="income.html" class="py-3 flex flex-col items-center">💰<span>Income</span></a>
+    <a href="expense.html" class="py-3 flex flex-col items-center">💸<span>Expense</span></a>
+    <a href="projects.html" class="py-3 flex flex-col items-center">🏗️<span>Project</span></a>
+    <a href="reports.html" class="py-3 flex flex-col items-center">📊<span>Report</span></a>
+  </div>
+</nav>
 
 <script>
   // Sidebar toggle
@@ -99,30 +105,31 @@
   }
   menuBtn.addEventListener('click', toggleSidebar);
 
-  // Supabase init (only once!)
+  // Initialize Supabase (only once!)
   const SUPABASE_URL = 'https://sbqyxvxpeqipcuavryhb.supabase.co';
-  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNicXl4dnhwZXFpcGN1YXZyeWhiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjkxNTk0NjcsImV4cCI6MjA4NDczNTQ2N30.XWbqg5fwC3TDFt-G79H-SGg-9WMdV08qkZ6OzdPK8f8'; // replace
-  const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNicXl4dnhwZXFpcGN1YXZyeWhiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjkxNTk0NjcsImV4cCI6MjA4NDczNTQ2N30.XWbqg5fwC3TDFt-G79H-SGg-9WMdV08qkZ6OzdPK8f8'; // replace with your anon key
+  const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-  async function loadDashboard(){
+  async function loadDashboard() {
     try {
-      const thirtyDaysAgo = new Date();
-      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate()-30);
-      const thirtyDays = thirtyDaysAgo.toISOString().split('T')[0];
+      // last 30 days
+      const date30 = new Date();
+      date30.setDate(date30.getDate()-30);
+      const dateStr = date30.toISOString().split('T')[0];
 
       // Income last 30 days
-      const { data: incomeData } = await supabase.from('income').select('received_amount').gte('date',thirtyDays);
-      const incomeSum = incomeData.reduce((acc,i)=>acc + parseFloat(i.received_amount||0),0);
+      const { data: incomeData } = await supabaseClient.from('income').select('received_amount');
+      const incomeSum = incomeData.reduce((acc,i)=>acc+parseFloat(i.received_amount||0),0);
       document.getElementById('income-value').innerText = '৳ '+incomeSum.toLocaleString();
 
       // Expense last 30 days
-      const { data: expenseData } = await supabase.from('expense').select('paid_amount').gte('date',thirtyDays);
+      const { data: expenseData } = await supabaseClient.from('expense').select('paid_amount');
       const expenseSum = expenseData.reduce((acc,e)=>acc+parseFloat(e.paid_amount||0),0);
       document.getElementById('expense-value').innerText = '৳ '+expenseSum.toLocaleString();
 
       // Projects
-      const { data: ongoingProjects } = await supabase.from('projects').select('*').eq('status','Ongoing');
-      const { data: completedProjects } = await supabase.from('projects').select('*').eq('status','Completed');
+      const { data: ongoingProjects } = await supabaseClient.from('projects').select('*').eq('status','Ongoing');
+      const { data: completedProjects } = await supabaseClient.from('projects').select('*').eq('status','Completed');
 
       document.getElementById('ongoing-count').innerText = ongoingProjects.length;
       document.getElementById('completed-count').innerText = completedProjects.length;
@@ -130,11 +137,11 @@
       const contractTotal = ongoingProjects.reduce((acc,p)=>acc+parseFloat(p.contract_value||0),0);
       document.getElementById('contract-value').innerText = '৳ '+contractTotal.toLocaleString();
 
-      const { data: billData } = await supabase.from('income').select('received_amount,project_id').in('project_id', ongoingProjects.map(p=>p.id));
+      const { data: billData } = await supabaseClient.from('income').select('received_amount,project_id');
       const billReceived = billData.reduce((acc,i)=>acc+parseFloat(i.received_amount||0),0);
       document.getElementById('bill-received-value').innerText = '৳ '+billReceived.toLocaleString();
 
-      // Project cards
+      // Render project cards
       const ongoingContainer = document.getElementById('ongoingProjects');
       ongoingContainer.innerHTML='';
       ongoingProjects.forEach(p=>{
@@ -167,9 +174,9 @@
         completedContainer.appendChild(card);
       });
 
-    }catch(err){
+    } catch(err){
       console.error(err);
-      alert('Error loading dashboard, check console.');
+      alert('Error loading dashboard. Check console.');
     }
   }
 
