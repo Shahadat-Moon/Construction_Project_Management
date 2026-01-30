@@ -49,7 +49,6 @@
 
   async function loadIncome() {
     try {
-      // Fetch all ongoing projects first
       const { data: projects, error: projectsError } = await supabase
         .from('projects')
         .select('id, name')
@@ -59,56 +58,47 @@
       const container = document.getElementById('incomeContainer');
       container.innerHTML = '';
 
-      // For each ongoing project, fetch all its income entries
       for (let proj of projects) {
         const { data: incomeEntries, error: incomeError } = await supabase
           .from('income')
           .select('*')
           .eq('project_id', proj.id)
           .order('date', { ascending: false });
-
-        if (incomeError) {
-          console.error(`Error loading income for project ${proj.id}:`, incomeError);
-          continue;
-        }
-
+        if (incomeError) continue;
         if (incomeEntries.length === 0) continue;
 
         const projectDiv = document.createElement('div');
         projectDiv.className = "bg-white p-4 rounded-xl shadow space-y-2";
 
-        projectDiv.innerHTML = `<h3 class="font-semibold text-blue-700">${proj.name}</h3>`;
+        projectDiv.innerHTML = `<h3 class="font-semibold text-blue-700 mb-2">${proj.name}</h3>`;
 
-        // Header row for table
-        const headerRow = document.createElement('div');
-        headerRow.className = "grid grid-cols-8 gap-2 border-b pb-1 font-semibold text-sm text-gray-700";
-        headerRow.innerHTML = `
-          <div>Date</div>
-          <div>Bill #</div>
-          <div>Gross</div>
-          <div>VAT</div>
-          <div>Tax</div>
-          <div>Retention</div>
-          <div>Received</div>
-          <div>Notes</div>
-        `;
-        projectDiv.appendChild(headerRow);
-
-        // Income entries
         incomeEntries.forEach(e => {
-          const row = document.createElement('div');
-          row.className = "grid grid-cols-8 gap-2 border-b py-1 text-sm text-gray-600 hover:bg-green-50 transition-all";
-          row.innerHTML = `
-            <div>${new Date(e.date).toLocaleDateString('en-US', { month:'long', day:'numeric' })}</div>
-            <div>${e.bill_number || '-'}</div>
-            <div class="text-red-600 font-medium">৳ ${e.gross_amount}</div>
-            <div>৳ ${e.vat || 0}</div>
-            <div>৳ ${e.tax || 0}</div>
-            <div>৳ ${e.retention || 0}</div>
-            <div class="text-green-600 font-medium">৳ ${e.received_amount || 0}</div>
-            <div>${e.notes || '-'}</div>
+          const entryDiv = document.createElement('div');
+          entryDiv.className = "bg-gray-50 p-3 rounded-lg shadow-sm space-y-1 hover:bg-green-50 transition-all";
+
+          // Row 1
+          const row1 = document.createElement('div');
+          row1.className = "grid grid-cols-4 gap-2 text-sm font-medium text-gray-700";
+          row1.innerHTML = `
+            <div>Date: ${new Date(e.date).toLocaleDateString('en-US',{month:'long',day:'numeric'})}</div>
+            <div>Bill #: ${e.bill_number || '-'}</div>
+            <div>Gross: ৳ ${e.gross_amount}</div>
+            <div>Received: ৳ ${e.received_amount || 0}</div>
           `;
-          projectDiv.appendChild(row);
+
+          // Row 2
+          const row2 = document.createElement('div');
+          row2.className = "grid grid-cols-4 gap-2 text-sm text-gray-600";
+          row2.innerHTML = `
+            <div>VAT: ৳ ${e.vat || 0}</div>
+            <div>Tax: ৳ ${e.tax || 0}</div>
+            <div>Retention: ৳ ${e.retention || 0}</div>
+            <div>Notes: ${e.notes || '-'}</div>
+          `;
+
+          entryDiv.appendChild(row1);
+          entryDiv.appendChild(row2);
+          projectDiv.appendChild(entryDiv);
         });
 
         container.appendChild(projectDiv);
