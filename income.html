@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Income</title>
-
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 </head>
@@ -22,11 +21,9 @@
   </div>
 </header>
 
-<main class="p-4 max-w-xl mx-auto space-y-6">
-
-  <h2 class="text-lg font-semibold">Recent Income</h2>
+<main class="p-4 max-w-3xl mx-auto space-y-6">
+  <h2 class="text-lg font-semibold">Income Overview (Ongoing Projects)</h2>
   <div id="incomeContainer" class="space-y-4"></div>
-
 </main>
 
 <!-- Floating Add Income -->
@@ -51,48 +48,78 @@
   );
 
   async function loadIncome() {
-    const { data, error } = await supabase
-      .from('income')
-      .select('*, projects(name)')
-      .order('date', { ascending: false })
-      .limit(10);
+    try {
+      // Fetch all ongoing projects first
+      const { data: projects, error: projectsError } = await supabase
+        .from('projects')
+        .select('id, name')
+        .eq('status', 'Ongoing');
+      if (projectsError) throw projectsError;
 
-    if (error) {
-      console.error(error)
-      return
-    }
+      const container = document.getElementById('incomeContainer');
+      container.innerHTML = '';
 
-    const container = document.getElementById('incomeContainer')
-    container.innerHTML = ''
+      // For each ongoing project, fetch all its income entries
+      for (let proj of projects) {
+        const { data: incomeEntries, error: incomeError } = await supabase
+          .from('income')
+          .select('*')
+          .eq('project_id', proj.id)
+          .order('date', { ascending: false });
 
-    // Group by project
-    const grouped = {}
-    data.forEach(i => {
-      const projectName = i.projects?.name || i.project_id
-      if (!grouped[projectName]) grouped[projectName] = []
-      grouped[projectName].push(i)
-    })
+        if (incomeError) {
+          console.error(`Error loading income for project ${proj.id}:`, incomeError);
+          continue;
+        }
 
-    for (let projectName in grouped) {
-      const projectDiv = document.createElement('div')
-      projectDiv.className = "bg-white p-4 rounded-xl shadow space-y-2"
-      projectDiv.innerHTML = `<h3 class="font-semibold text-blue-700">${projectName}</h3>`
+        if (incomeEntries.length === 0) continue;
 
-      let rows = grouped[projectName].map(e => `
-        <div class="grid grid-cols-4 gap-2 border-b pb-2">
-          <div class="text-gray-500">${new Date(e.date).toLocaleDateString('en-US',{month:'long',day:'numeric'})}</div>
-          <div>${e.bill_number || '-'}</div>
-          <div class="text-red-600 font-medium">৳ ${e.gross_amount}</div>
-          <div class="text-gray-500">${e.notes || '-'}</div>
-        </div>
-      `).join('')
+        const projectDiv = document.createElement('div');
+        projectDiv.className = "bg-white p-4 rounded-xl shadow space-y-2";
 
-      projectDiv.innerHTML += rows
-      container.appendChild(projectDiv)
+        projectDiv.innerHTML = `<h3 class="font-semibold text-blue-700">${proj.name}</h3>`;
+
+        // Header row for table
+        const headerRow = document.createElement('div');
+        headerRow.className = "grid grid-cols-8 gap-2 border-b pb-1 font-semibold text-sm text-gray-700";
+        headerRow.innerHTML = `
+          <div>Date</div>
+          <div>Bill #</div>
+          <div>Gross</div>
+          <div>VAT</div>
+          <div>Tax</div>
+          <div>Retention</div>
+          <div>Received</div>
+          <div>Notes</div>
+        `;
+        projectDiv.appendChild(headerRow);
+
+        // Income entries
+        incomeEntries.forEach(e => {
+          const row = document.createElement('div');
+          row.className = "grid grid-cols-8 gap-2 border-b py-1 text-sm text-gray-600 hover:bg-green-50 transition-all";
+          row.innerHTML = `
+            <div>${new Date(e.date).toLocaleDateString('en-US', { month:'long', day:'numeric' })}</div>
+            <div>${e.bill_number || '-'}</div>
+            <div class="text-red-600 font-medium">৳ ${e.gross_amount}</div>
+            <div>৳ ${e.vat || 0}</div>
+            <div>৳ ${e.tax || 0}</div>
+            <div>৳ ${e.retention || 0}</div>
+            <div class="text-green-600 font-medium">৳ ${e.received_amount || 0}</div>
+            <div>${e.notes || '-'}</div>
+          `;
+          projectDiv.appendChild(row);
+        });
+
+        container.appendChild(projectDiv);
+      }
+
+    } catch (err) {
+      console.error('Error loading income:', err);
     }
   }
 
-  loadIncome()
+  loadIncome();
 </script>
 
 </body>
