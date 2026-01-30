@@ -3,24 +3,39 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>M/S S.R. Suppliers</title>
+<title>Dashboard - M/S S.R. Suppliers</title>
 
 <!-- Tailwind CSS CDN -->
 <script src="https://cdn.tailwindcss.com"></script>
 <!-- Supabase JS CDN -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/supabase.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
   body { font-family: 'Inter', sans-serif; }
-  /* Sidebar scroll for smaller screens */
-  .sidebar { height: 100vh; overflow-y: auto; }
+  /* Sidebar overlay */
+  #sidebar-overlay {
+    background: rgba(0,0,0,0.5);
+  }
 </style>
 </head>
-<body class="bg-gray-100 flex">
+<body class="bg-gray-100">
+
+<!-- Header -->
+<header class="bg-white shadow px-6 py-4 flex justify-between items-center sticky top-0 z-20">
+  <button id="menu-btn" class="text-gray-800 text-2xl font-bold">&#9776;</button>
+  <h1 class="text-2xl font-semibold text-gray-800">Dashboard</h1>
+  <img src="logo.jpg" alt="Company Logo" class="h-10 w-auto">
+</header>
+
+<!-- Sidebar overlay -->
+<div id="sidebar-overlay" class="fixed inset-0 hidden z-30" onclick="toggleSidebar()"></div>
 
 <!-- Sidebar -->
-<aside class="sidebar w-64 bg-blue-900 text-white flex-shrink-0">
-  <div class="p-6 text-xl font-bold border-b border-blue-800">M/S S.R. Suppliers</div>
+<aside id="sidebar" class="fixed top-0 left-0 w-64 bg-blue-900 text-white h-full transform -translate-x-full transition-transform z-40">
+  <div class="p-6 text-xl font-bold border-b border-blue-800 flex justify-between items-center">
+    Menu
+    <button onclick="toggleSidebar()" class="text-white text-lg font-bold">&times;</button>
+  </div>
   <nav class="mt-6">
     <a href="index.html" class="block px-6 py-3 hover:bg-blue-800 rounded bg-blue-800">🏠 Dashboard</a>
     <a href="projects.html" class="block px-6 py-3 hover:bg-blue-800 rounded mt-1">🏗️ Projects</a>
@@ -36,78 +51,74 @@
 </aside>
 
 <!-- Main Content -->
-<div class="flex-1 flex flex-col">
+<div id="main" class="p-6 space-y-8">
 
-  <!-- Header -->
-  <header class="bg-white shadow px-6 py-4 flex justify-between items-center sticky top-0 z-10">
-    <h1 class="text-2xl font-semibold text-gray-800">Dashboard</h1>
-    <img src="logo.jpg" alt="Company Logo" class="h-10 w-auto">
-  </header>
-
-  <!-- Content -->
-  <main class="p-6 flex-1 overflow-y-auto space-y-8">
-
-    <!-- Top 6 Summary Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-6">
-      <!-- Card templates will be dynamically filled -->
-      <div id="card-income" class="bg-blue-50 p-6 rounded-xl shadow flex flex-col justify-between">
-        <p class="text-gray-600 font-medium">Income (Last 30 Days)</p>
-        <p id="income-value" class="text-2xl font-bold text-blue-700">৳ 0</p>
-      </div>
-      <div id="card-expense" class="bg-red-50 p-6 rounded-xl shadow flex flex-col justify-between">
-        <p class="text-gray-600 font-medium">Expense (Last 30 Days)</p>
-        <p id="expense-value" class="text-2xl font-bold text-red-600">৳ 0</p>
-      </div>
-      <div id="card-ongoing" class="bg-yellow-50 p-6 rounded-xl shadow flex flex-col justify-between">
-        <p class="text-gray-600 font-medium">Ongoing Projects</p>
-        <p id="ongoing-count" class="text-2xl font-bold text-yellow-700">0</p>
-      </div>
-      <div id="card-completed" class="bg-green-50 p-6 rounded-xl shadow flex flex-col justify-between">
-        <p class="text-gray-600 font-medium">Completed Projects</p>
-        <p id="completed-count" class="text-2xl font-bold text-green-700">0</p>
-      </div>
-      <div id="card-contract" class="bg-purple-50 p-6 rounded-xl shadow flex flex-col justify-between">
-        <p class="text-gray-600 font-medium">Total Contract Value (Ongoing)</p>
-        <p id="contract-value" class="text-2xl font-bold text-purple-700">৳ 0</p>
-      </div>
-      <div id="card-bill-received" class="bg-indigo-50 p-6 rounded-xl shadow flex flex-col justify-between">
-        <p class="text-gray-600 font-medium">Total Bill Received (Ongoing)</p>
-        <p id="bill-received-value" class="text-2xl font-bold text-indigo-700">৳ 0</p>
-      </div>
+  <!-- Top 6 Summary Cards -->
+  <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-6">
+    <div id="card-income" class="bg-blue-50 p-6 rounded-xl shadow flex flex-col justify-between">
+      <p class="text-gray-600 font-medium">Income (Last 30 Days)</p>
+      <p id="income-value" class="text-2xl font-bold text-blue-700">৳ 0</p>
     </div>
+    <div id="card-expense" class="bg-red-50 p-6 rounded-xl shadow flex flex-col justify-between">
+      <p class="text-gray-600 font-medium">Expense (Last 30 Days)</p>
+      <p id="expense-value" class="text-2xl font-bold text-red-600">৳ 0</p>
+    </div>
+    <div id="card-ongoing" class="bg-yellow-50 p-6 rounded-xl shadow flex flex-col justify-between">
+      <p class="text-gray-600 font-medium">Ongoing Projects</p>
+      <p id="ongoing-count" class="text-2xl font-bold text-yellow-700">0</p>
+    </div>
+    <div id="card-completed" class="bg-green-50 p-6 rounded-xl shadow flex flex-col justify-between">
+      <p class="text-gray-600 font-medium">Completed Projects</p>
+      <p id="completed-count" class="text-2xl font-bold text-green-700">0</p>
+    </div>
+    <div id="card-contract" class="bg-purple-50 p-6 rounded-xl shadow flex flex-col justify-between">
+      <p class="text-gray-600 font-medium">Total Contract Value (Ongoing)</p>
+      <p id="contract-value" class="text-2xl font-bold text-purple-700">৳ 0</p>
+    </div>
+    <div id="card-bill-received" class="bg-indigo-50 p-6 rounded-xl shadow flex flex-col justify-between">
+      <p class="text-gray-600 font-medium">Total Bill Received (Ongoing)</p>
+      <p id="bill-received-value" class="text-2xl font-bold text-indigo-700">৳ 0</p>
+    </div>
+  </div>
 
-    <!-- Projects Section -->
-    <section>
-      <h2 class="text-xl font-bold text-gray-800 mb-4">Ongoing Projects</h2>
-      <div id="ongoingProjects" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <!-- Ongoing project cards will be injected here -->
-      </div>
-    </section>
+  <!-- Projects Section -->
+  <section>
+    <h2 class="text-xl font-bold text-gray-800 mb-4">Ongoing Projects</h2>
+    <div id="ongoingProjects" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+  </section>
 
-    <section>
-      <h2 class="text-xl font-bold text-gray-800 mt-8 mb-4">Completed Projects</h2>
-      <div id="completedProjects" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <!-- Completed project cards will be injected here -->
-      </div>
-    </section>
+  <section>
+    <h2 class="text-xl font-bold text-gray-800 mt-8 mb-4">Completed Projects</h2>
+    <div id="completedProjects" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+  </section>
 
-  </main>
 </div>
 
-<!-- Supabase + JS -->
+<!-- JS -->
 <script>
+  // Sidebar toggle
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('sidebar-overlay');
+  const menuBtn = document.getElementById('menu-btn');
+
+  function toggleSidebar() {
+    sidebar.classList.toggle('-translate-x-full');
+    overlay.classList.toggle('hidden');
+  }
+  menuBtn.addEventListener('click', toggleSidebar);
+
+  // Supabase initialization
   const SUPABASE_URL = 'https://sbqyxvxpeqipcuavryhb.supabase.co';
   const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNicXl4dnhwZXFpcGN1YXZyeWhiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjkxNTk0NjcsImV4cCI6MjA4NDczNTQ2N30.XWbqg5fwC3TDFt-G79H-SGg-9WMdV08qkZ6OzdPK8f8'; // replace with your key
   const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
   async function loadDashboard() {
     try {
-      // --- 6 Summary Cards ---
       const thirtyDaysAgo = new Date();
       thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
       const thirtyDays = thirtyDaysAgo.toISOString().split('T')[0];
 
-      // Income last 30 days
+      // Last 30 days income
       let { data: incomeData } = await supabase
         .from('income')
         .select('received_amount')
@@ -115,7 +126,7 @@
       const incomeSum = incomeData.reduce((acc, i) => acc + parseFloat(i.received_amount || 0), 0);
       document.getElementById('income-value').innerText = '৳ ' + incomeSum.toLocaleString();
 
-      // Expense last 30 days
+      // Last 30 days expense
       let { data: expenseData } = await supabase
         .from('expense')
         .select('paid_amount')
@@ -123,81 +134,68 @@
       const expenseSum = expenseData.reduce((acc, e) => acc + parseFloat(e.paid_amount || 0), 0);
       document.getElementById('expense-value').innerText = '৳ ' + expenseSum.toLocaleString();
 
-      // Ongoing and completed projects
+      // Projects
       let { data: ongoingProjects } = await supabase
         .from('projects')
         .select('*')
-        .eq('status', 'Ongoing')
-        .order('start_date', { ascending: true });
+        .eq('status','Ongoing')
+        .order('start_date',{ascending:true});
       let { data: completedProjects } = await supabase
         .from('projects')
         .select('*')
-        .eq('status', 'Completed')
-        .order('actual_completion', { ascending: true });
+        .eq('status','Completed')
+        .order('actual_completion',{ascending:true});
 
       document.getElementById('ongoing-count').innerText = ongoingProjects.length;
       document.getElementById('completed-count').innerText = completedProjects.length;
 
-      // Total contract value of ongoing
-      const contractTotal = ongoingProjects.reduce((acc, p) => acc + parseFloat(p.contract_value || 0), 0);
+      const contractTotal = ongoingProjects.reduce((acc,p)=>acc+parseFloat(p.contract_value||0),0);
       document.getElementById('contract-value').innerText = '৳ ' + contractTotal.toLocaleString();
 
-      // Total bill received (sum of received_amount for ongoing projects)
-      const ongoingIds = ongoingProjects.map(p => `'${p.id}'`).join(',');
-      let { data: billData } = await supabase
+      const { data: billData } = await supabase
         .from('income')
         .select('received_amount, project_id')
         .in('project_id', ongoingProjects.map(p=>p.id));
-      const billReceived = billData.reduce((acc, i) => acc + parseFloat(i.received_amount || 0), 0);
+      const billReceived = billData.reduce((acc,i)=>acc+parseFloat(i.received_amount||0),0);
       document.getElementById('bill-received-value').innerText = '৳ ' + billReceived.toLocaleString();
 
       // --- Project Cards ---
       const ongoingContainer = document.getElementById('ongoingProjects');
       ongoingContainer.innerHTML = '';
-      for (let p of ongoingProjects) {
-        const projectBill = billData
-          .filter(i => i.project_id === p.id)
-          .reduce((acc, i) => acc + parseFloat(i.received_amount || 0), 0);
-
+      for(let p of ongoingProjects){
+        const projectBill = billData.filter(i=>i.project_id===p.id).reduce((acc,i)=>acc+parseFloat(i.received_amount||0),0);
         const card = document.createElement('div');
         card.className = "bg-blue-50 border-l-4 border-blue-600 p-4 rounded-xl shadow cursor-pointer hover:shadow-lg hover:bg-blue-100 transition-all";
         card.innerHTML = `
           <h3 class="font-semibold text-blue-800">${p.name}</h3>
-          <p class="text-sm text-gray-600">Start: ${p.start_date || '-'} | Expected: ${p.expected_completion || '-'}</p>
+          <p class="text-sm text-gray-600">Start: ${p.start_date||'-'} | Expected: ${p.expected_completion||'-'}</p>
           <p class="text-sm text-gray-600">Contract Value: ৳ ${parseFloat(p.contract_value||0).toLocaleString()}</p>
           <p class="text-sm text-gray-600">Bill Received: ৳ ${projectBill.toLocaleString()}</p>
           <p class="text-sm text-gray-600">Retention Money: ৳ ${parseFloat(p.retention||0).toLocaleString()}</p>
         `;
-        card.addEventListener('click', () => {
-          window.location.href = `project.html?id=${p.id}`;
-        });
+        card.addEventListener('click',()=>{window.location.href=`project.html?id=${p.id}`});
         ongoingContainer.appendChild(card);
       }
 
       const completedContainer = document.getElementById('completedProjects');
-      completedContainer.innerHTML = '';
-      for (let p of completedProjects) {
-        const projectBill = billData
-          .filter(i => i.project_id === p.id)
-          .reduce((acc, i) => acc + parseFloat(i.received_amount || 0), 0);
-
+      completedContainer.innerHTML='';
+      for(let p of completedProjects){
+        const projectBill = billData.filter(i=>i.project_id===p.id).reduce((acc,i)=>acc+parseFloat(i.received_amount||0),0);
         const card = document.createElement('div');
         card.className = "bg-green-50 border-l-4 border-green-600 p-4 rounded-xl shadow cursor-pointer hover:shadow-lg hover:bg-green-100 transition-all";
         card.innerHTML = `
           <h3 class="font-semibold text-green-800">${p.name}</h3>
-          <p class="text-sm text-gray-600">Start: ${p.start_date || '-'} | Actual Completion: ${p.actual_completion || '-'}</p>
+          <p class="text-sm text-gray-600">Start: ${p.start_date||'-'} | Actual Completion: ${p.actual_completion||'-'}</p>
           <p class="text-sm text-gray-600">Contract Value: ৳ ${parseFloat(p.contract_value||0).toLocaleString()}</p>
           <p class="text-sm text-gray-600">Bill Received: ৳ ${projectBill.toLocaleString()}</p>
           <p class="text-sm text-gray-600">Retention Money: ৳ ${parseFloat(p.retention||0).toLocaleString()}</p>
         `;
-        card.addEventListener('click', () => {
-          window.location.href = `project.html?id=${p.id}`;
-        });
+        card.addEventListener('click',()=>{window.location.href=`project.html?id=${p.id}`});
         completedContainer.appendChild(card);
       }
 
-    } catch (err) {
-      console.error('Dashboard load error:', err);
+    } catch(err){
+      console.error('Dashboard load error:',err);
       alert('Error loading dashboard. Check console.');
     }
   }
