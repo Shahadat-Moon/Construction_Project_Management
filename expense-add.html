@@ -4,56 +4,63 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Add Expense</title>
-<script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-slate-100 p-4">
 
-<!-- Header -->
-<header class="bg-white shadow px-4 py-3 flex justify-between items-center sticky top-0 z-10">
-  <a href="expense.html" class="text-blue-600 text-sm">← Back</a>
-  <h1 class="text-lg font-semibold">Add Expense</h1>
-  <div class="flex items-center space-x-2">
-    <p class="text-sm font-medium">M/S. S.R Suppliers</p>
-    <img src="logo.png" alt="Logo" class="h-8 w-auto cursor-pointer">
-  </div>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+</head>
+
+<body class="bg-slate-100 min-h-screen pb-28">
+
+<!-- HEADER -->
+<header class="bg-white shadow px-4 py-3 grid grid-cols-3 items-center sticky top-0 z-10">
+  <button onclick="history.back()" class="text-blue-600 text-sm text-left">Back</button>
+  <div class="flex justify-center items-center gap-2">
+      <img src="logo.jpg" class="h-7" alt="Company Logo">
+      <h1 class="text-lg font-semibold">Add Expenses</h1>
+    </div>
+  
+  <div></div>
 </header>
 
-<main class="pb-24">
+<!-- MAIN -->
+<main class="p-4 max-w-xl mx-auto">
 
-<form class="space-y-4 bg-white p-4 rounded-xl shadow">
+  <form id="expenseForm" class="bg-white rounded-2xl shadow p-5 space-y-4">
 
-  <!-- Project Selection -->
-  <div>
-    <label class="text-sm text-gray-600">Select Project</label>
-    <select class="w-full p-3 border rounded-lg">
-      <option value="">Metro Flyover – Ongoing</option>
-      <option value="">Warehouse – Ongoing</option>
-    </select>
-  </div>
+    <input id="project_id" required
+      placeholder="Project ID"
+      class="w-full border rounded-lg p-3">
 
-  <!-- Date & Expense Type -->
-  <input type="date" placeholder="Date" class="w-full p-3 rounded-lg border">
-  <select class="w-full p-3 border rounded-lg">
-    <option value="">Expense Type</option>
-    <option value="Labor">Labor</option>
-    <option value="Material">Material</option>
-    <option value="Machinery">Machinery</option>
-    <option value="Miscellaneous">Miscellaneous</option>
-  </select>
+    <input id="date" type="date" required
+      class="w-full border rounded-lg p-3">
 
-  <!-- Amount -->
-  <input type="number" placeholder="Amount" class="w-full p-3 rounded-lg border">
-  <input type="number" placeholder="Paid Amount" class="w-full p-3 rounded-lg border" readonly>
+    <input id="type" required
+      placeholder="Expense Type"
+      class="w-full border rounded-lg p-3">
 
-  <textarea placeholder="Details / Notes" class="w-full p-3 rounded-lg border"></textarea>
+    <input id="amount" type="number" required
+      placeholder="Total Amount"
+      class="w-full border rounded-lg p-3">
 
-  <button class="w-full bg-blue-600 text-white py-3 rounded-lg">Save Expense</button>
+    <input id="paid_amount" type="number" required
+      placeholder="Paid Amount"
+      class="w-full border rounded-lg p-3">
 
-</form>
+    <textarea id="notes" rows="3"
+      placeholder="Notes"
+      class="w-full border rounded-lg p-3"></textarea>
 
+    <div id="msgBox" class="hidden text-sm rounded-lg p-3"></div>
+
+    <button type="submit"
+      class="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition">
+      Save Expense
+    </button>
+
+  </form>
 </main>
 
-<!-- Bottom Tabs -->
+<!-- BOTTOM NAV -->
 <nav class="fixed bottom-0 left-0 right-0 bg-white border-t shadow">
   <div class="grid grid-cols-5 text-xs text-gray-600">
     <a href="index.html" class="py-3 flex flex-col items-center">🏠<span>Home</span></a>
@@ -65,13 +72,47 @@
 </nav>
 
 <script>
-const amountInput = document.querySelector('input[placeholder="Amount"]');
-const paidInput = document.querySelector('input[placeholder="Paid Amount"]');
+  const supabase = window.supabase.createClient(
+    'https://sbqyxvxpeqipcuavryhb.supabase.co',
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNicXl4dnhwZXFpcGN1YXZyeWhiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjkxNTk0NjcsImV4cCI6MjA4NDczNTQ2N30.XWbqg5fwC3TDFt-G79H-SGg-9WMdV08qkZ6OzdPK8f8'
+  )
 
-amountInput.addEventListener('input', () => {
-  const amt = parseFloat(amountInput.value) || 0;
-  paidInput.value = amt; // For now, Paid = Amount (can adjust if tax/VAT later)
-});
+  const form = document.getElementById('expenseForm')
+  const msgBox = document.getElementById('msgBox')
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault()
+
+    msgBox.className = 'hidden'
+
+    const expense = {
+      project_id: document.getElementById('project_id').value.trim(),
+      date: document.getElementById('date').value,
+      type: document.getElementById('type').value.trim(),
+      amount: document.getElementById('amount').value,
+      paid_amount: document.getElementById('paid_amount').value,
+      notes: document.getElementById('notes').value || null
+    }
+
+    const { error } = await supabase
+      .from('expense')
+      .insert(expense)
+
+    if (error) {
+      msgBox.className = 'bg-red-100 text-red-700 p-3 rounded-lg'
+      msgBox.innerText = error.message
+      msgBox.classList.remove('hidden')
+      return
+    }
+
+    msgBox.className = 'bg-green-100 text-green-700 p-3 rounded-lg'
+    msgBox.innerText = 'Expense added successfully!'
+    msgBox.classList.remove('hidden')
+
+    setTimeout(() => {
+      window.location.href = 'expense.html'
+    }, 1200)
+  })
 </script>
 
 </body>
