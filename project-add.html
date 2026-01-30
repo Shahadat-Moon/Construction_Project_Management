@@ -128,12 +128,15 @@
   const form = document.getElementById("projectForm");
   const msgBox = document.getElementById("msgBox");
 
+  const id = document.getElementById('id'); 
+  const name = document.getElementById('name'); 
+
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
 
     const projectData = {
-      document.getElementById("id")?.value?.trim(),
-      document.getElementById("name")?.value?.trim(),
+      id: id.value.trim(),
+      name: name.value.trim(),
       location: location.value || null,
       authority: authority.value || null,
       contract_number: contract_number.value || null,
