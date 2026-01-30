@@ -12,8 +12,11 @@
 <body class="bg-slate-100 min-h-screen">
 
 <!-- HEADER -->
-<header class="bg-white shadow px-4 py-3 sticky top-0 z-10">
-  <h1 id="projectTitle" class="text-lg font-semibold">Project Overview</h1>
+<header class="bg-white shadow px-4 py-3 sticky top-0 z-10 flex items-center gap-3">
+  <button onclick="history.back()" class="text-blue-600 text-xl">⬅</button>
+  <h1 id="projectTitle" class="text-lg font-semibold truncate">
+    Project Overview
+  </h1>
 </header>
 
 <main class="p-4 pb-28 space-y-6">
@@ -104,6 +107,7 @@ async function loadProject() {
     .single();
 
   document.getElementById("projectTitle").innerText = data.name;
+  document.getElementById("projectTitle").innerText = data.name;
   document.getElementById("p_id").innerText = data.id;
   document.getElementById("p_status").innerText = data.status;
   document.getElementById("p_location").innerText = data.location || "-";
@@ -142,14 +146,14 @@ async function loadIncome() {
     .from("income")
     .select("*")
     .eq("project_id", projectId)
-    .order("bill_date", { ascending: false })
+    .order("date", { ascending: false })
     .limit(5);
 
   const box = document.getElementById("incomeList");
   box.innerHTML = "";
   data?.forEach(i => {
     box.innerHTML += `<div class="flex justify-between border-b pb-1">
-      <span>Bill ${i.bill_no}</span>
+      <span>Bill ${i.bill_number}</span>
       <span class="text-green-700">৳ ${i.received_amount}</span>
     </div>`;
   });
@@ -161,14 +165,14 @@ async function loadExpense() {
     .from("expense")
     .select("*")
     .eq("project_id", projectId)
-    .order("expense_date", { ascending: false })
+    .order("date", { ascending: false })
     .limit(5);
 
   const box = document.getElementById("expenseList");
   box.innerHTML = "";
   data?.forEach(e => {
     box.innerHTML += `<div class="flex justify-between border-b pb-1">
-      <span>${e.description}</span>
+      <span>${e.type}</span>
       <span class="text-red-600">৳ ${e.amount}</span>
     </div>`;
   });
