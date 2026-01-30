@@ -1,106 +1,85 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Add Project</title>
 
+<!-- Tailwind -->
 <script src="https://cdn.tailwindcss.com"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<!-- Supabase v2 (UMD – correct for browser) -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 </head>
 
-<body class="bg-slate-100 min-h-screen">
+<body class="bg-slate-100 min-h-screen pb-28">
 
 <!-- HEADER -->
-<header class="bg-white shadow px-4 py-3 sticky top-0 z-10 flex items-center gap-3">
-  <button onclick="history.back()" class="text-blue-600 text-xl">⬅</button>
-  <h1 class="text-lg font-semibold">Add New Project</h1>
+<header class="bg-white shadow px-4 py-3 flex items-center justify-between sticky top-0 z-10">
+  <div class="flex items-center gap-3">
+    <button onclick="history.back()" class="text-blue-600 text-xl">←</button>
+    <h1 class="text-lg font-semibold">Add Project</h1>
+  </div>
+  <img src="logo.jpg" alt="Company Logo" class="h-8">
 </header>
 
-<!-- CONTENT -->
-<main class="p-4 pb-28">
+<!-- MAIN -->
+<main class="p-4 max-w-xl mx-auto">
 
-  <!-- MESSAGE -->
-  <div id="msgBox" class="hidden mb-4 p-3 rounded-lg text-sm"></div>
-
-  <!-- FORM -->
-  <form id="projectForm" class="bg-white rounded-xl shadow p-4 space-y-4">
+  <form id="projectForm" class="bg-white rounded-2xl shadow p-5 space-y-4">
 
     <!-- Project ID -->
-    <div>
-      <label class="text-sm font-medium">Project ID *</label>
-      <input type="text" id="id" required
-        placeholder="CF-001"
-        class="w-full mt-1 border rounded-lg px-3 py-2 focus:outline-none focus:ring focus:ring-blue-300">
-    </div>
+    <input id="id" type="text" required
+      placeholder="Project ID (Tender ID)"
+      class="w-full border rounded-lg p-3">
 
     <!-- Project Name -->
-    <div>
-      <label class="text-sm font-medium">Project Name *</label>
-      <input type="text" id="name" required
-        class="w-full mt-1 border rounded-lg px-3 py-2">
-    </div>
+    <input id="name" type="text" required
+      placeholder="Project Name"
+      class="w-full border rounded-lg p-3">
 
-    <!-- Location -->
-    <div>
-      <label class="text-sm font-medium">Location</label>
-      <input type="text" id="location"
-        class="w-full mt-1 border rounded-lg px-3 py-2">
-    </div>
+    <input id="location" type="text"
+      placeholder="Location"
+      class="w-full border rounded-lg p-3">
 
-    <!-- Authority -->
-    <div>
-      <label class="text-sm font-medium">Authority</label>
-      <input type="text" id="authority"
-        class="w-full mt-1 border rounded-lg px-3 py-2">
-    </div>
+    <input id="authority" type="text"
+      placeholder="Authority"
+      class="w-full border rounded-lg p-3">
 
-    <!-- Contract Number -->
-    <div>
-      <label class="text-sm font-medium">Contract Number</label>
-      <input type="text" id="contract_number"
-        class="w-full mt-1 border rounded-lg px-3 py-2">
-    </div>
+    <input id="contract_number" type="text"
+      placeholder="Contract Number"
+      class="w-full border rounded-lg p-3">
 
-    <!-- Contract Value -->
-    <div>
-      <label class="text-sm font-medium">Contract Value</label>
-      <input type="number" id="contract_value"
-        class="w-full mt-1 border rounded-lg px-3 py-2">
-    </div>
+    <input id="contract_value" type="number"
+      placeholder="Contract Value"
+      class="w-full border rounded-lg p-3">
 
-    <!-- Advance Payment -->
-    <div>
-      <label class="text-sm font-medium">Advance Payment</label>
-      <input type="number" id="advance_payment" value="0"
-        class="w-full mt-1 border rounded-lg px-3 py-2">
-    </div>
+    <input id="advance_payment" type="number"
+      placeholder="Advance Payment"
+      class="w-full border rounded-lg p-3">
 
-    <!-- Dates -->
     <div class="grid grid-cols-2 gap-3">
       <div>
-        <label class="text-sm font-medium">Start Date</label>
-        <input type="date" id="start_date"
-          class="w-full mt-1 border rounded-lg px-3 py-2">
+        <label class="text-xs text-gray-500">Start Date</label>
+        <input id="start_date" type="date"
+          class="w-full border rounded-lg p-3">
       </div>
-
       <div>
-        <label class="text-sm font-medium">Expected Completion</label>
-        <input type="date" id="expected_completion"
-          class="w-full mt-1 border rounded-lg px-3 py-2">
+        <label class="text-xs text-gray-500">Expected Completion</label>
+        <input id="expected_completion" type="date"
+          class="w-full border rounded-lg p-3">
       </div>
     </div>
 
-    <!-- Notes -->
-    <div>
-      <label class="text-sm font-medium">Notes</label>
-      <textarea id="notes" rows="3"
-        class="w-full mt-1 border rounded-lg px-3 py-2"></textarea>
-    </div>
+    <textarea id="notes" rows="3"
+      placeholder="Notes"
+      class="w-full border rounded-lg p-3"></textarea>
 
-    <!-- BUTTON -->
+    <!-- MESSAGE BOX -->
+    <div id="msgBox" class="hidden text-sm rounded-lg p-3"></div>
+
     <button type="submit"
-      class="w-full bg-blue-600 text-white py-3 rounded-xl font-medium hover:bg-blue-700 transition">
+      class="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition">
       Save Project
     </button>
 
@@ -120,58 +99,55 @@
 
 <!-- SCRIPT -->
 <script>
-  const SUPABASE_URL = "https://sbqyxvxpeqipcuavryhb.supabase.co";
-  const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNicXl4dnhwZXFpcGN1YXZyeWhiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjkxNTk0NjcsImV4cCI6MjA4NDczNTQ2N30.XWbqg5fwC3TDFt-G79H-SGg-9WMdV08qkZ6OzdPK8f8";
+  const SUPABASE_URL = 'https://sbqyxvxpeqipcuavryhb.supabase.co'
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNicXl4dnhwZXFpcGN1YXZyeWhiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjkxNTk0NjcsImV4cCI6MjA4NDczNTQ2N30.XWbqg5fwC3TDFt-G79H-SGg-9WMdV08qkZ6OzdPK8f8'
 
-  const db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  const supabase = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_ANON_KEY
+  )
 
-  const form = document.getElementById("projectForm");
-  const msgBox = document.getElementById("msgBox");
+  const form = document.getElementById('projectForm')
+  const msgBox = document.getElementById('msgBox')
 
-  const id = document.getElementById('id'); 
-  const name = document.getElementById('name');
-  const location = document.getElementById('location'); 
-  const authority = document.getElementById('authority');
-  const contract_number = document.getElementById('contract_number');
-  const contract_value = document.getElementById('contract_value');
-  const advance_payment = document.getElementById('advance_payment');
-  const start_date = document.getElementById('start_date');
-  const expected_completion = document.getElementById('expected_completion');
-  const notes = document.getElementById('notes');
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault()
 
-  form.addEventListener("submit", async (e) => {
-    e.preventDefault();
+    msgBox.className = 'hidden'
 
-    const projectData = {
-      id: id.value.trim(),
-      name: name.value.trim(),
-      location: location.value || null,
-      authority: authority.value || null,
-      contract_number: contract_number.value || null,
-      contract_value: contract_value.value || null,
-      advance_payment: advance_payment.value || 0,
-      start_date: start_date.value || null,
-      expected_completion: expected_completion.value || null,
-      notes: notes.value || null
-    };
-
-    const { error } = await db.from("projects").insert([projectData]);
-
-    if (error) {
-      msgBox.className = "mb-4 p-3 rounded-lg bg-red-100 text-red-700";
-      msgBox.innerText = "❌ Error: " + error.message;
-      msgBox.classList.remove("hidden");
-      return;
+    const project = {
+      id: document.getElementById('id').value.trim(),
+      name: document.getElementById('name').value.trim(),
+      location: document.getElementById('location').value || null,
+      authority: document.getElementById('authority').value || null,
+      contract_number: document.getElementById('contract_number').value || null,
+      contract_value: document.getElementById('contract_value').value || null,
+      advance_payment: document.getElementById('advance_payment').value || 0,
+      start_date: document.getElementById('start_date').value || null,
+      expected_completion: document.getElementById('expected_completion').value || null,
+      notes: document.getElementById('notes').value || null,
+      status: 'Ongoing'
     }
 
-    msgBox.className = "mb-4 p-3 rounded-lg bg-green-100 text-green-700";
-    msgBox.innerText = "✅ Project added successfully!";
-    msgBox.classList.remove("hidden");
+    const { error } = await supabase
+      .from('projects')
+      .insert(project)
+
+    if (error) {
+      msgBox.className = 'bg-red-100 text-red-700 p-3 rounded-lg'
+      msgBox.innerText = error.message
+      msgBox.classList.remove('hidden')
+      return
+    }
+
+    msgBox.className = 'bg-green-100 text-green-700 p-3 rounded-lg'
+    msgBox.innerText = 'Project added successfully!'
+    msgBox.classList.remove('hidden')
 
     setTimeout(() => {
-      window.location.href = `project.html?id=${projectData.id}`;
-    }, 1200);
-  });
+      window.location.href = `project.html?id=${project.id}`
+    }, 1200)
+  })
 </script>
 
 </body>
