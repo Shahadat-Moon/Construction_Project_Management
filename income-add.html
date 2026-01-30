@@ -1,82 +1,161 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Add Income</title>
 
 <script src="https://cdn.tailwindcss.com"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.7/dist/umd/supabase.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 </head>
 
-<body class="bg-slate-100 min-h-screen">
+<body class="bg-slate-100 min-h-screen pb-24">
 
 <!-- HEADER -->
-<header class="bg-white shadow px-4 py-3 sticky top-0">
-  <h1 class="text-lg font-semibold">Add Income</h1>
+<header class="bg-white shadow sticky top-0 z-10">
+  <div class="px-4 py-3 grid grid-cols-3 items-center">
+    <button onclick="history.back()" class="text-blue-600 text-sm text-left">Back</button>
+    <h1 class="text-lg font-semibold text-center">Add Income</h1>
+    <div class="flex justify-end">
+      <img src="logo.jpg" class="h-8" alt="Company Logo">
+    </div>
+  </div>
 </header>
 
-<!-- MAIN -->
-<main class="p-4 pb-28">
+<main class="p-4 max-w-xl mx-auto">
+  <form id="incomeForm" class="bg-white rounded-2xl shadow p-6 space-y-4">
 
-<div class="bg-white p-4 rounded-xl shadow space-y-4">
+    <!-- PROJECT -->
+    <div>
+      <label class="text-sm text-gray-600">Project</label>
+      <select id="project_id" required class="mt-1 w-full border rounded-lg p-2">
+        <option value="">Select Project</option>
+      </select>
+    </div>
 
-<select id="project" class="w-full border rounded p-2"></select>
+    <!-- DATE -->
+    <div>
+      <label class="text-sm text-gray-600">Bill Date</label>
+      <input type="date" id="date" required class="mt-1 w-full border rounded-lg p-2">
+    </div>
 
-<input id="billNo" placeholder="Bill No" class="w-full border rounded p-2" />
-<input id="billAmount" type="number" placeholder="Bill Amount" class="w-full border rounded p-2" />
-<input id="receivedAmount" type="number" placeholder="Received Amount" class="w-full border rounded p-2" />
+    <!-- BILL NUMBER -->
+    <div>
+      <label class="text-sm text-gray-600">Bill Number</label>
+      <input type="text" id="bill_number" class="mt-1 w-full border rounded-lg p-2" placeholder="Optional">
+    </div>
 
-<button onclick="saveIncome()"
- class="w-full bg-green-600 text-white py-2 rounded-lg">
- Save Income
-</button>
+    <!-- GROSS -->
+    <div>
+      <label class="text-sm text-gray-600">Gross Amount</label>
+      <input type="number" id="gross_amount" required class="mt-1 w-full border rounded-lg p-2" placeholder="e.g. 50000">
+    </div>
 
-</div>
+    <!-- VAT -->
+    <div>
+      <label class="text-sm text-gray-600">VAT</label>
+      <input type="number" id="vat" value="0" class="mt-1 w-full border rounded-lg p-2">
+    </div>
+
+    <!-- TAX -->
+    <div>
+      <label class="text-sm text-gray-600">Tax</label>
+      <input type="number" id="tax" value="0" class="mt-1 w-full border rounded-lg p-2">
+    </div>
+
+    <!-- RETENTION -->
+    <div>
+      <label class="text-sm text-gray-600">Retention</label>
+      <input type="number" id="retention" value="0" class="mt-1 w-full border rounded-lg p-2">
+    </div>
+
+    <!-- NOTES -->
+    <div>
+      <label class="text-sm text-gray-600">Notes</label>
+      <textarea id="notes" rows="3" class="mt-1 w-full border rounded-lg p-2" placeholder="Optional"></textarea>
+    </div>
+
+    <!-- SAVE -->
+    <button type="submit" class="w-full bg-green-600 text-white py-3 rounded-xl font-medium hover:bg-green-700 transition">
+      Save Income
+    </button>
+
+  </form>
 </main>
 
-<!-- BOTTOM TABS -->
-<nav class="fixed bottom-0 left-0 right-0 bg-white border-t shadow">
-  <div class="grid grid-cols-5 text-xs text-gray-600">
-    <a href="index.html" class="py-3 flex flex-col items-center">🏠<span>Home</span></a>
-    <a href="income.html" class="py-3 flex flex-col items-center text-green-600 font-medium">💰<span>Income</span></a>
-    <a href="expense.html" class="py-3 flex flex-col items-center">💸<span>Expense</span></a>
-    <a href="projects.html" class="py-3 flex flex-col items-center">🏗️<span>Project</span></a>
-    <a href="reports.html" class="py-3 flex flex-col items-center">📊<span>Report</span></a>
+<!-- SUCCESS / ERROR MODAL -->
+<div id="modal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50">
+  <div class="bg-white rounded-2xl p-6 w-80 text-center">
+    <p id="modalMessage" class="text-lg font-medium"></p>
+    <button onclick="closeModal()" class="mt-4 bg-green-600 text-white px-6 py-2 rounded-lg">
+      OK
+    </button>
   </div>
-</nav>
+</div>
 
-<!-- JS -->
 <script>
-const SUPABASE_URL = "https://sbqyxvxpeqipcuavryhb.supabase.co";
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNicXl4dnhwZXFpcGN1YXZyeWhiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjkxNTk0NjcsImV4cCI6MjA4NDczNTQ2N30.XWbqg5fwC3TDFt-G79H-SGg-9WMdV08qkZ6OzdPK8f8";
-const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  const supabase = window.supabase.createClient(
+    'https://sbqyxvxpeqipcuavryhb.supabase.co',
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNicXl4dnhwZXFpcGN1YXZyeWhiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjkxNTk0NjcsImV4cCI6MjA4NDczNTQ2N30.XWbqg5fwC3TDFt-G79H-SGg-9WMdV08qkZ6OzdPK8f8'
+  );
 
-async function loadProjects() {
-  const { data } = await supabase
-    .from("projects")
-    .select("id, name")
-    .eq("status", "Ongoing");
+  const projectSelect = document.getElementById('project_id');
+  const dateInput = document.getElementById('date');
+  const modal = document.getElementById('modal');
+  const modalMessage = document.getElementById('modalMessage');
 
-  const select = document.getElementById("project");
-  data.forEach(p => {
-    select.innerHTML += `<option value="${p.id}">${p.name}</option>`;
+  // Today date
+  dateInput.value = new Date().toISOString().split('T')[0];
+
+  // Load ongoing projects
+  async function loadProjects() {
+    const { data, error } = await supabase
+      .from('projects')
+      .select('id, name')
+      .eq('status', 'Ongoing')
+      .order('name');
+
+    if (error) return showModal('Failed to load projects');
+
+    data.forEach(p => {
+      const opt = document.createElement('option');
+      opt.value = p.id;
+      opt.textContent = `${p.name} (${p.id})`;
+      projectSelect.appendChild(opt);
+    });
+  }
+  loadProjects();
+
+  // Save income
+  document.getElementById('incomeForm').addEventListener('submit', async e => {
+    e.preventDefault();
+    const income = {
+      project_id: projectSelect.value,
+      date: dateInput.value,
+      bill_number: document.getElementById('bill_number').value,
+      gross_amount: document.getElementById('gross_amount').value,
+      vat: document.getElementById('vat').value,
+      tax: document.getElementById('tax').value,
+      retention: document.getElementById('retention').value,
+      notes: document.getElementById('notes').value
+    };
+
+    const { error } = await supabase.from('income').insert([income]);
+    if (error) return showModal('❌ Failed to save income');
+
+    showModal('✅ Income added successfully');
+    setTimeout(() => window.location.href = 'income.html', 1200);
   });
-}
 
-async function saveIncome() {
-  await supabase.from("income").insert({
-    project_id: document.getElementById("project").value,
-    bill_no: document.getElementById("billNo").value,
-    bill_amount: document.getElementById("billAmount").value,
-    received_amount: document.getElementById("receivedAmount").value,
-    bill_date: new Date()
-  });
-
-  alert("Income Added Successfully");
-}
-
-loadProjects();
+  function showModal(msg) {
+    modalMessage.textContent = msg;
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+  }
+  function closeModal() {
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+  }
 </script>
 
 </body>
