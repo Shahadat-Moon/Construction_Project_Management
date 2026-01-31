@@ -7,14 +7,72 @@
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 
+<!-- Google Inter font + small UI overrides for consistent modern look -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --accent: #06b6d4;    /* cyan-400 */
+    --muted: #64748b;     /* slate-500 */
+    --card-bg: #ffffff;
+    --surface: #f8fafc;   /* subtle page surface */
+  }
+  html { font-family: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; }
+  body { background: var(--surface); color: #0f172a; }
+
+  /* summary grid: 2 columns on small screens so the 6 cards use ~three rows */
+  .summary-grid { display: grid; gap: 0.5rem; grid-template-columns: repeat(2, minmax(0,1fr)); }
+  @media(min-width:640px){ .summary-grid { grid-template-columns: repeat(3, minmax(0,1fr)); } }
+
+  /* summary cards: center labels and values */
+  .summary-card {
+    background: var(--card-bg);
+    padding: 0.6rem;
+    border-radius: 0.6rem;
+    box-shadow: 0 6px 18px rgba(2,6,23,0.06);
+    display:flex;
+    flex-direction:column;
+    justify-content:center; /* center vertically */
+    align-items:center;     /* center horizontally */
+    text-align:center;      /* center text */
+    min-height:64px;
+  }
+  .summary-card .label { font-size:0.65rem; color:var(--muted); margin:0 0 0.25rem 0; line-height:1; }
+  .summary-card .value { font-size:0.95rem; font-weight:700; line-height:1; display:block; }
+
+  /* per-card value colors */
+  #card-income .value { color: #06b6d4; }       /* cyan */
+  #card-expense .value { color: #ef4444; }      /* red */
+  #card-ongoing .value { color: #f59e0b; }      /* amber */
+  #card-completed .value { color: #10b981; }    /* green */
+  #card-contract .value { color: #7c3aed; }     /* violet */
+  #card-bill-received .value { color: #6366f1; }/* indigo */
+
+  /* larger screens: allow 6 across on very wide */
+  @media(min-width:1024px){ .summary-grid { grid-template-columns: repeat(3, minmax(0,1fr)); gap:0.75rem; } .summary-card .value{font-size:1rem} }
+  header h1 { color:#0f172a; }
+
+  /* project cards: base style */
+  .project-card { background: #fff; padding:0.9rem; border-radius:0.8rem; box-shadow:0 8px 24px rgba(2,6,23,0.04); display:flex; flex-direction:column; gap:0.35rem; cursor:pointer; transition:transform .12s ease, box-shadow .12s ease; }
+  .project-card:hover { transform:translateY(-4px); box-shadow:0 12px 30px rgba(2,6,23,0.08); }
+  .project-card h3 { font-weight:600; color:#0f172a; margin:0; font-size:1rem; }
+  .project-meta { font-size:0.8rem; color:var(--muted); }
+
+  /* distinct ongoing vs completed backgrounds + accent bar */
+  .project-ongoing { background: linear-gradient(90deg, #ecfeff 0%, #f0f9ff 100%); border-left:4px solid #06b6d4; }
+  .project-completed { background: linear-gradient(90deg, #f0fdf4 0%, #ecfdf5 100%); border-left:4px solid #10b981; }
+
+  /* projects: single column list (one card per row) */
+  .projects-grid { display:grid; grid-template-columns: 1fr; gap:0.75rem; }
+  @media(min-width:1024px){ .projects-grid { grid-template-columns: 1fr; } }
+</style>
 </head>
 <body class="bg-gray-100">
 
 <!-- Header -->
-<header class="bg-white shadow px-6 py-4 flex justify-between items-center sticky top-0 z-20">
-  <button id="menu-btn" class="text-gray-800 text-2xl font-bold">&#9776;</button>
-  <h1 class="text-2xl font-semibold text-gray-800">M/S S.R. Suppliers</h1>
-  <img src="logo.jpg" alt="Company Logo" class="h-10 w-auto">
+<header class="bg-white shadow px-4 py-3 flex justify-between items-center sticky top-0 z-20">
+  <button id="menu-btn" class="text-slate-700 text-xl md:text-2xl font-semibold">&#9776;</button>
+  <h1 class="text-lg md:text-2xl font-semibold tracking-tight">M/S S.R. Suppliers</h1>
+  <img src="logo.jpg" alt="Company Logo" class="h-9 w-auto">
 </header>
 
 <!-- Sidebar overlay -->
@@ -43,43 +101,55 @@
 <!-- Main Content -->
 <div id="main" class="p-6 space-y-8">
 
-  <!-- Top 6 Summary Cards (2 columns on mobile, 3 columns large) -->
-  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-    <div id="card-income" class="bg-blue-50 p-6 rounded-xl shadow flex flex-col justify-between">
-      <p class="text-gray-600 font-small">Income (Last 30 Days)</p>
-      <p id="income-value" class="text-xl font-bold text-blue-400">৳ 0</p>
+  <!-- Top 6 Summary Cards (compact: 3 columns on small screens -> two rows on mobile) -->
+  <div class="summary-grid">
+    <div id="card-income" class="summary-card">
+      <div>
+        <p class="label">Income (Last 30 Days)</p>
+        <p id="income-value" class="value">৳ 0</p>
+      </div>
     </div>
-    <div id="card-expense" class="bg-red-50 p-6 rounded-xl shadow flex flex-col justify-between">
-      <p class="text-gray-300 font-medium">Expense (Last 30 Days)</p>
-      <p id="expense-value" class="text-xl font-bold text-red-400">৳ 0</p>
+    <div id="card-expense" class="summary-card">
+      <div>
+        <p class="label">Expense (Last 30 Days)</p>
+        <p id="expense-value" class="value">৳ 0</p>
+      </div>
     </div>
-    <div id="card-ongoing" class="bg-yellow-50 p-6 rounded-xl shadow flex flex-col justify-between">
-      <p class="text-gray-300 font-medium">Ongoing Projects</p>
-      <p id="ongoing-count" class="text-xl font-bold text-yellow-400">0</p>
+    <div id="card-ongoing" class="summary-card">
+      <div>
+        <p class="label">Ongoing Projects</p>
+        <p id="ongoing-count" class="value">0</p>
+      </div>
     </div>
-    <div id="card-completed" class="bg-green-50 p-6 rounded-xl shadow flex flex-col justify-between">
-      <p class="text-gray-300 font-medium">Completed Projects</p>
-      <p id="completed-count" class="text-xl font-bold text-green-400">0</p>
+    <div id="card-completed" class="summary-card">
+      <div>
+        <p class="label">Completed Projects</p>
+        <p id="completed-count" class="value">0</p>
+      </div>
     </div>
-    <div id="card-contract" class="bg-purple-50 p-6 rounded-xl shadow flex flex-col justify-between">
-      <p class="text-gray-300 font-medium">Total Contract Value (Ongoing)</p>
-      <p id="contract-value" class="text-xl font-bold text-purple-400">৳ 0</p>
+    <div id="card-contract" class="summary-card">
+      <div>
+        <p class="label">Total Contract Value (Ongoing)</p>
+        <p id="contract-value" class="value">৳ 0</p>
+      </div>
     </div>
-    <div id="card-bill-received" class="bg-indigo-50 p-6 rounded-xl shadow flex flex-col justify-between">
-      <p class="text-gray-300 font-medium">Total Bill Received (Ongoing)</p>
-      <p id="bill-received-value" class="text-xl font-bold text-indigo-400">৳ 0</p>
+    <div id="card-bill-received" class="summary-card">
+      <div>
+        <p class="label">Total Bill Received (Ongoing)</p>
+        <p id="bill-received-value" class="value">৳ 0</p>
+      </div>
     </div>
   </div>
 
   <!-- Projects Section -->
   <section>
     <h2 class="text-xl font-bold text-gray-800 mb-4">Ongoing Projects</h2>
-    <div id="ongoingProjects" class="grid grid-cols-1 lg:grid-cols-2 gap-6"></div>
+    <div id="ongoingProjects" class="projects-grid"></div>
   </section>
 
   <section>
     <h2 class="text-xl font-bold text-gray-800 mt-8 mb-4">Completed Projects</h2>
-    <div id="completedProjects" class="grid grid-cols-1 lg:grid-cols-2 gap-6"></div>
+    <div id="completedProjects" class="projects-grid"></div>
   </section>
 
 </div>
@@ -148,12 +218,12 @@
       ongoingProjects.forEach(p=>{
         const projectBill = billData.filter(i=>i.project_id===p.id).reduce((acc,i)=>acc+parseFloat(i.received_amount||0),0);
         const card = document.createElement('div');
-        card.className="bg-blue-50 border-l-4 border-blue-600 p-4 rounded-xl shadow cursor-pointer hover:shadow-lg hover:bg-blue-100 transition-all";
+        card.className="project-card project-ongoing";
         card.innerHTML=`
-          <h3 class="font-semibold text-blue-800">${p.name}</h3>
-          <p class="text-sm text-gray-600">Start: ${p.start_date||'-'} | Expected: ${p.expected_completion||'-'}</p>
-          <p class="text-sm text-gray-600">Contract Value: ৳ ${parseFloat(p.contract_value||0).toLocaleString()}</p>
-          <p class="text-sm text-gray-600">Bill Received: ৳ ${projectBill.toLocaleString()}</p>
+          <h3>${p.name}</h3>
+          <p class="project-meta">Start: ${p.start_date||'-'} | Expected: ${p.expected_completion||'-'}</p>
+          <p class="project-meta">Contract: ৳ ${parseFloat(p.contract_value||0).toLocaleString()}</p>
+          <p class="project-meta">Bill Received: ৳ ${projectBill.toLocaleString()}</p>
         `;
         card.addEventListener('click',()=>{window.location.href=`project.html?id=${p.id}`});
         ongoingContainer.appendChild(card);
@@ -164,12 +234,12 @@
       completedProjects.forEach(p=>{
         const projectBill = billData.filter(i=>i.project_id===p.id).reduce((acc,i)=>acc+parseFloat(i.received_amount||0),0);
         const card = document.createElement('div');
-        card.className="bg-green-50 border-l-4 border-green-600 p-4 rounded-xl shadow cursor-pointer hover:shadow-lg hover:bg-green-100 transition-all";
+        card.className="project-card project-completed";
         card.innerHTML=`
-          <h3 class="font-semibold text-green-800">${p.name}</h3>
-          <p class="text-sm text-gray-600">Start: ${p.start_date||'-'} | Actual: ${p.actual_completion||'-'}</p>
-          <p class="text-sm text-gray-600">Contract Value: ৳ ${parseFloat(p.contract_value||0).toLocaleString()}</p>
-          <p class="text-sm text-gray-600">Bill Received: ৳ ${projectBill.toLocaleString()}</p>
+          <h3>${p.name}</h3>
+          <p class="project-meta">Start: ${p.start_date||'-'} | Actual: ${p.actual_completion||'-'}</p>
+          <p class="project-meta">Contract Value: ৳ ${parseFloat(p.contract_value||0).toLocaleString()}</p>
+          <p class="project-meta">Bill Received: ৳ ${projectBill.toLocaleString()}</p>
         `;
         card.addEventListener('click',()=>{window.location.href=`project.html?id=${p.id}`});
         completedContainer.appendChild(card);
