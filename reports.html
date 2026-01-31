@@ -1,125 +1,166 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports</title>
-<script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-slate-100 p-4">
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Reports - M/S S.R. Suppliers</title>
 
-<!-- Header -->
-<header class="bg-white shadow px-4 py-3 flex justify-between items-center sticky top-0 z-10">
-  <h1 class="text-lg font-semibold">Reports</h1>
-  <div class="relative">
-    <div class="flex items-center space-x-2">
-      <p class="text-sm font-medium">M/S. S.R Suppliers</p>
-      <img id="companyBtn" src="logo.png" alt="Logo" class="h-8 w-auto cursor-pointer">
-    </div>
-    <div id="companyDropdown" class="absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-lg p-3 hidden">
-      <p class="text-sm font-medium">M/S. S.R Suppliers</p>
-      <p class="text-xs text-gray-500">Phone: 0123456789</p>
-      <p class="text-xs text-gray-500">Email: info@srsuppliers.com</p>
-    </div>
+<!-- Tailwind + project styles -->
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="assets/styles.css">
+
+<!-- Supabase (UMD) -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<!-- Charts + PDF export -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"></script>
+
+<style>
+  body { padding-bottom: 110px; background: var(--surface,#f8fafc); }
+  .pad-header { border-bottom:1px solid #e6edf2; padding-bottom:0.5rem; margin-bottom:1rem; }
+  .pad-company { font-weight:700; font-size:1.05rem; color:#0f172a; }
+  .pad-meta { font-size:0.85rem; color:var(--muted,#64748b); }
+  @media print {
+    nav.bottom-nav, header.app-header, #printControls, #reportActions { display:none; }
+    body { background: #fff; padding-bottom: 0; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Header (matches index) -->
+<header class="app-header px-4 py-3 flex justify-between items-center sticky top-0 z-20">
+  <div class="flex items-center gap-3">
+    <button id="menu-btn" class="text-slate-700 text-xl md:text-2xl font-semibold">☰</button>
+    <h1 class="text-lg md:text-2xl font-semibold tracking-tight">M/S S.R. Suppliers</h1>
   </div>
+  <img src="logo.jpg" alt="logo" class="h-9 w-auto">
 </header>
 
-<main class="space-y-4 pb-24">
-
-  <!-- Summary Cards -->
-  <div class="grid grid-cols-2 gap-3">
-    <div class="bg-white p-4 rounded-xl shadow">
-      <p class="text-xs text-gray-500">Total Income</p>
-      <p class="font-bold">৳ 8,500,000</p>
-    </div>
-    <div class="bg-white p-4 rounded-xl shadow">
-      <p class="text-xs text-gray-500">Total Expense</p>
-      <p class="font-bold text-red-600">৳ 6,200,000</p>
-    </div>
-    <div class="bg-white p-4 rounded-xl shadow">
-      <p class="text-xs text-gray-500">Total Received</p>
-      <p class="font-bold text-green-600">৳ 7,650,000</p>
-    </div>
-    <div class="bg-white p-4 rounded-xl shadow">
-      <p class="text-xs text-gray-500">Total Paid</p>
-      <p class="font-bold text-green-600">৳ 5,950,000</p>
-    </div>
+<!-- Sidebar overlay + static sidebar (same design as index) -->
+<div id="sidebar-overlay" class="fixed inset-0 hidden z-30" onclick="toggleSidebar()"></div>
+<aside id="sidebar" class="fixed top-0 left-0 w-64 bg-white text-gray-900 h-full transform -translate-x-full transition-transform z-40 shadow-lg">
+  <div class="p-4">
+    <h3 class="font-semibold mb-4">Menu</h3>
+    <nav class="flex flex-col gap-2">
+      <a href="index.html" class="py-2 px-3 rounded hover:bg-slate-50">Home</a>
+      <a href="income.html" class="py-2 px-3 rounded hover:bg-slate-50">Income</a>
+      <a href="expense.html" class="py-2 px-3 rounded hover:bg-slate-50">Expense</a>
+      <a href="projects.html" class="py-2 px-3 rounded hover:bg-slate-50">Projects</a>
+      <a href="reports.html" class="py-2 px-3 rounded bg-slate-100">Reports</a>
+    </nav>
   </div>
+</aside>
 
-  <!-- Filters -->
-  <section class="bg-white p-4 rounded-xl shadow space-y-2">
-    <h2 class="font-semibold mb-2">Filter Reports</h2>
-    <select class="w-full p-3 border rounded-lg">
-      <option value="">All Projects</option>
-      <option value="">Metro Flyover</option>
-      <option value="">Warehouse Construction</option>
-    </select>
-    <div class="grid grid-cols-2 gap-2">
-      <input type="month" class="w-full p-3 border rounded-lg" placeholder="From">
-      <input type="month" class="w-full p-3 border rounded-lg" placeholder="To">
+<main class="p-4 max-w-4xl mx-auto space-y-6">
+
+  <!-- Controls -->
+  <section class="bg-white rounded-xl shadow p-4 space-y-4">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+
+      <div>
+        <label class="text-sm font-medium">Project Scope</label>
+        <select id="scope" class="w-full mt-1 p-2 border rounded">
+          <option value="all">All Projects</option>
+          <option value="ongoing">Ongoing Projects</option>
+          <option value="completed">Completed Projects</option>
+          <option value="single">Single Project (Select below)</option>
+        </select>
+      </div>
+
+      <div id="projectBox" class="hidden">
+        <label class="text-sm font-medium">Select Project</label>
+        <select id="projectSelect" class="w-full mt-1 p-2 border rounded"></select>
+      </div>
+
+      <div>
+        <label class="text-sm font-medium">Report Type</label>
+        <select id="reportType" class="w-full mt-1 p-2 border rounded">
+          <option value="overview">Project Overview</option>
+          <option value="income">Income (Detailed)</option>
+          <option value="expense">Expense (Detailed)</option>
+          <option value="pl">Profit / Loss</option>
+        </select>
+      </div>
+
     </div>
-    <button class="w-full bg-blue-600 text-white py-2 rounded-lg">Apply Filter</button>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div>
+        <label class="text-sm font-medium">Timeline</label>
+        <select id="timeline" class="w-full mt-1 p-2 border rounded">
+          <option value="30">Last 30 Days</option>
+          <option value="month">This Month</option>
+          <option value="90">Last 90 Days</option>
+          <option value="all">Lifetime</option>
+        </select>
+      </div>
+
+      <div class="col-span-2 flex items-end gap-3">
+        <!-- Only Generate button visible initially -->
+        <button id="runBtn" onclick="generateReport()"
+          class="w-full md:w-auto bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700">Generate</button>
+
+        <!-- printControls removed from top; will appear in report area after generation -->
+      </div>
+    </div>
   </section>
 
-  <!-- Report Table -->
-  <section class="bg-white p-4 rounded-xl shadow">
-    <h2 class="font-semibold mb-2">Income & Expense Entries</h2>
-    <div class="overflow-x-auto">
-      <table class="w-full text-sm border-collapse">
-        <thead class="bg-gray-100">
-          <tr>
-            <th class="p-2 text-left border">Project</th>
-            <th class="p-2 text-left border">Type</th>
-            <th class="p-2 text-left border">Date</th>
-            <th class="p-2 text-right border">Gross / Amount</th>
-            <th class="p-2 text-right border">VAT / Tax</th>
-            <th class="p-2 text-right border">Retention / Paid</th>
-            <th class="p-2 text-right border">Received / Paid</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr class="border-b">
-            <td class="p-2">Metro Flyover</td>
-            <td class="p-2">Income</td>
-            <td class="p-2">15 Jan 2026</td>
-            <td class="p-2 text-right">৳ 3,000,000</td>
-            <td class="p-2 text-right">৳ 300,000</td>
-            <td class="p-2 text-right">৳ 300,000</td>
-            <td class="p-2 text-right">৳ 2,700,000</td>
-          </tr>
-          <tr class="border-b">
-            <td class="p-2">Metro Flyover</td>
-            <td class="p-2">Expense</td>
-            <td class="p-2">18 Jan 2026</td>
-            <td class="p-2 text-right">৳ 1,200,000</td>
-            <td class="p-2 text-right">৳ 0</td>
-            <td class="p-2 text-right">৳ 1,200,000</td>
-            <td class="p-2 text-right">৳ 1,200,000</td>
-          </tr>
-          <tr>
-            <td class="p-2">Warehouse Construction</td>
-            <td class="p-2">Income</td>
-            <td class="p-2">20 Jan 2026</td>
-            <td class="p-2 text-right">৳ 500,000</td>
-            <td class="p-2 text-right">৳ 20,000</td>
-            <td class="p-2 text-right">৳ 20,000</td>
-            <td class="p-2 text-right">৳ 480,000</td>
-          </tr>
-        </tbody>
-      </table>
+  <!-- Summary cards -->
+  <section id="summary" class="summary-grid hidden">
+    <div id="card-income" class="summary-card">
+      <p class="label">Total Income</p>
+      <p id="sumIncome" class="value">৳ 0</p>
+    </div>
+    <div id="card-expense" class="summary-card">
+      <p class="label">Total Expense</p>
+      <p id="sumExpense" class="value">৳ 0</p>
+    </div>
+    <div id="card-contract" class="summary-card">
+      <p class="label">Contract Value</p>
+      <p id="sumContract" class="value">৳ 0</p>
+    </div>
+    <div id="card-billed" class="summary-card">
+      <p class="label">Bill Received</p>
+      <p id="sumBilled" class="value">৳ 0</p>
+    </div>
+    <div id="card-expensed" class="summary-card">
+      <p class="label">Project Expenses</p>
+      <p id="sumProjectExpense" class="value">৳ 0</p>
+    </div>
+    <div id="card-net" class="summary-card">
+      <p class="label">Net (Income - Expense)</p>
+      <p id="sumNet" class="value">৳ 0</p>
+    </div>
+  </section>
+
+  <!-- Result / pad area -->
+  <section id="reportPad" class="bg-white rounded-xl shadow p-6 hidden">
+    <div class="pad-header flex justify-between items-start">
+      <div>
+        <div class="pad-company">M/S S.R. Suppliers</div>
+        <div class="pad-meta" id="padMeta">Report</div>
+      </div>
+      <div class="text-right pad-meta">
+        <div id="padDate"></div>
+        <div id="padPreparedBy">Prepared by: System</div>
+      </div>
     </div>
 
-    <!-- Download / Print Buttons -->
-    <div class="flex justify-end space-x-2 mt-3">
-      <button class="bg-green-600 text-white py-2 px-4 rounded-lg">Download PDF</button>
-      <button class="bg-blue-600 text-white py-2 px-4 rounded-lg">Print</button>
+    <div id="reportResult" class="space-y-4"></div>
+
+    <!-- Actions shown after generation -->
+    <div id="reportActions" class="mt-4 hidden justify-end gap-2">
+      <button onclick="window.print()" class="bg-white border px-3 py-2 rounded shadow">Print</button>
+      <button id="pdfBtn" class="bg-white border px-3 py-2 rounded shadow" onclick="downloadPDF()">Download PDF</button>
     </div>
   </section>
 
 </main>
 
 <!-- Bottom Tabs -->
-<nav class="fixed bottom-0 left-0 right-0 bg-white border-t shadow">
+<nav class="bottom-nav fixed bottom-0 left-0 right-0 z-20">
   <div class="grid grid-cols-5 text-xs text-gray-600">
     <a href="index.html" class="py-3 flex flex-col items-center">🏠<span>Home</span></a>
     <a href="income.html" class="py-3 flex flex-col items-center">💰<span>Income</span></a>
@@ -130,11 +171,419 @@
 </nav>
 
 <script>
-const btn = document.getElementById("companyBtn");
-const dropdown = document.getElementById("companyDropdown");
+/* Supabase client (no redeclare) */
+const SUPABASE_URL = "https://sbqyxvxpeqipcuavryhb.supabase.co";
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNicXl4dnhwZXFpcGN1YXZyeWhiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjkxNTk0NjcsImV4cCI6MjA4NDczNTQ2N30.XWbqg5fwC3TDFt-G79H-SGg-9WMdV08qkZ6OzdPK8f8";
 
-btn.addEventListener("click", () => {
-  dropdown.classList.toggle("hidden");
+const supabaseClient = window.supabaseClient
+  ?? (window.supabase && typeof window.supabase.createClient === 'function'
+      ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
+      : null);
+
+if (!supabaseClient) console.error('Supabase client not available.');
+
+/* UI refs */
+const scopeEl = document.getElementById('scope');
+const projectBox = document.getElementById('projectBox');
+const projectSelect = document.getElementById('projectSelect');
+const reportType = document.getElementById('reportType');
+const timelineEl = document.getElementById('timeline');
+const summarySection = document.getElementById('summary');
+const reportPad = document.getElementById('reportPad');
+const reportResult = document.getElementById('reportResult');
+const reportActions = document.getElementById('reportActions');
+
+/* Sidebar toggle (uses static sidebar/overlay) */
+function toggleSidebar(){
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('sidebar-overlay');
+  if (!sidebar || !overlay) return;
+  const hidden = sidebar.classList.contains('-translate-x-full');
+  if (hidden) {
+    sidebar.classList.remove('-translate-x-full');
+    overlay.classList.remove('hidden');
+  } else {
+    sidebar.classList.add('-translate-x-full');
+    overlay.classList.add('hidden');
+  }
+}
+document.getElementById('menu-btn')?.addEventListener('click', toggleSidebar);
+
+/* populate projects */
+async function loadProjects(filterStatus = null) {
+  if (!supabaseClient) return;
+  let query = supabaseClient.from('projects').select('id,name,status').order('id', {ascending:true});
+  if (filterStatus) query = query.eq('status', filterStatus);
+  const { data = [] } = await query;
+  projectSelect.innerHTML = '';
+  data.forEach(p=>{
+    const o = document.createElement('option');
+    o.value = p.id;
+    o.textContent = `${p.id} - ${p.name} [${p.status}]`;
+    projectSelect.appendChild(o);
+  });
+}
+
+/* scope change: show/hide project select and enable/disable overview */
+scopeEl.addEventListener('change', async e=>{
+  const v = e.target.value;
+  const overviewOpt = reportType.querySelector('option[value="overview"]');
+  if (v === 'single') {
+    projectBox.classList.remove('hidden');
+    if (overviewOpt) overviewOpt.disabled = false;
+    await loadProjects();
+  } else if (v === 'ongoing' || v === 'completed') {
+    await loadProjects(v === 'ongoing' ? 'Ongoing' : 'Completed');
+    projectBox.classList.remove('hidden');
+    if (overviewOpt) overviewOpt.disabled = false;
+  } else { // all
+    projectBox.classList.add('hidden');
+    if (overviewOpt) {
+      overviewOpt.disabled = true;
+      if (reportType.value === 'overview') reportType.value = 'income'; // fallback
+    }
+  }
+});
+
+/* helpers */
+function money(v){ return '৳ ' + Number(v||0).toLocaleString(); }
+function dateNow(){ return new Date().toLocaleString(); }
+
+/* charts state */
+let activeCharts = [];
+function clearCharts(){ activeCharts.forEach(c=>c.destroy?.()); activeCharts = []; }
+
+/* --- Rendering functions (unchanged except they now treat projectId param as authoritative) --- */
+async function renderOverview(scope, projectId) {
+  reportResult.innerHTML = '';
+  if (!supabaseClient) { reportResult.textContent = 'Database not available.'; return; }
+
+  if (projectId) {
+    // Single project overview (projectId authoritative)
+    const { data:[project] = [] } = await supabaseClient.from('projects').select('*').eq('id', projectId).limit(1);
+    if (!project) { reportResult.innerHTML = '<p class="text-sm text-gray-500">Project not found.</p>'; return; }
+
+    const { data: income = [] } = await supabaseClient.from('income').select('received_amount').eq('project_id', projectId);
+    const { data: expense = [] } = await supabaseClient.from('expense').select('amount').eq('project_id', projectId);
+    const billed = income.reduce((s,i)=>s+Number(i.received_amount||0),0);
+    const exp = expense.reduce((s,e)=>s+Number(e.amount||0),0);
+    const contract = Number(project.contract_value || 0);
+    const net = billed - exp;
+    const progress = contract ? Math.min(100, Math.round((billed/contract)*100)) : 0;
+
+    reportResult.innerHTML = `
+      <div class="grid grid-cols-1 gap-3">
+        <div class="project-card ${project.status==='Completed'?'project-completed':'project-ongoing'} p-4">
+          <h3 class="text-lg font-semibold">${project.name} <span class="text-sm text-gray-500">#${project.id}</span></h3>
+          <p class="project-meta">Start: ${project.start_date || '-'} • Expected: ${project.expected_completion || '-'}</p>
+          <div class="mt-3 grid grid-cols-2 gap-3">
+            <div class="bg-white p-3 rounded shadow text-center">
+              <div class="text-sm text-gray-500">Contract Value</div>
+              <div class="text-lg font-bold">${money(contract)}</div>
+            </div>
+            <div class="bg-white p-3 rounded shadow text-center">
+              <div class="text-sm text-gray-500">Bill Received</div>
+              <div class="text-lg font-bold">${money(billed)}</div>
+            </div>
+            <div class="bg-white p-3 rounded shadow text-center">
+              <div class="text-sm text-gray-500">Expenses</div>
+              <div class="text-lg font-bold">${money(exp)}</div>
+            </div>
+            <div class="bg-white p-3 rounded shadow text-center">
+              <div class="text-sm text-gray-500">Net</div>
+              <div class="text-lg font-bold">${money(net)}</div>
+            </div>
+          </div>
+
+          <div class="mt-4">
+            <div class="text-sm text-gray-500 mb-1">Progress</div>
+            <div class="w-full bg-slate-200 rounded h-3 overflow-hidden">
+              <div style="width:${progress}%;" class="h-3 bg-cyan-400"></div>
+            </div>
+            <div class="text-sm text-gray-600 mt-1">${progress}% billed of contract</div>
+          </div>
+        </div>
+
+        <div class="bg-white p-4 rounded shadow">
+          <canvas id="projChart" height="160"></canvas>
+        </div>
+      </div>
+    `;
+
+    // Chart
+    const monthsMap = {};
+    const addMonth = (d,amt,type)=>{
+      const dt = new Date(d || Date.now());
+      const key = `${dt.getFullYear()}-${String(dt.getMonth()+1).padStart(2,'0')}`;
+      monthsMap[key] = monthsMap[key] || { bill:0, exp:0 };
+      monthsMap[key][type] += Number(amt||0);
+    };
+    const { data: incRows = [] } = await supabaseClient.from('income').select('received_amount,date').eq('project_id', projectId);
+    const { data: expRows = [] } = await supabaseClient.from('expense').select('amount,date').eq('project_id', projectId);
+    incRows.forEach(r=>addMonth(r.date, r.received_amount, 'bill'));
+    expRows.forEach(r=>addMonth(r.date, r.amount, 'exp'));
+    const labels = Object.keys(monthsMap).sort();
+    const billData = labels.map(k=>monthsMap[k].bill);
+    const expData = labels.map(k=>monthsMap[k].exp);
+
+    const ctx = document.getElementById('projChart').getContext('2d');
+    clearCharts();
+    activeCharts.push(new Chart(ctx, {
+      type:'bar',
+      data:{
+        labels,
+        datasets:[
+          { label:'Bill Received', data:billData, backgroundColor:'#60a5fa' },
+          { label:'Expenses', data:expData, backgroundColor:'#f87171' }
+        ]
+      },
+      options:{ responsive:true, maintainAspectRatio:false }
+    }));
+
+  } else {
+    // multi project overview
+    const { data: projects = [] } = await supabaseClient.from('projects').select('id,name,status,contract_value,start_date,expected_completion');
+    if (!projects.length) { reportResult.innerHTML = '<p class="text-sm text-gray-500">No projects found.</p>'; return; }
+
+    const { data: bills = [] } = await supabaseClient.from('income').select('project_id,received_amount');
+    const { data: exps = [] } = await supabaseClient.from('expense').select('project_id,amount');
+
+    const agg = {};
+    bills.forEach(b=>{ agg[b.project_id] = agg[b.project_id] || { billed:0, expense:0 }; agg[b.project_id].billed += Number(b.received_amount||0); });
+    exps.forEach(x=>{ agg[x.project_id] = agg[x.project_id] || { billed:0, expense:0 }; agg[x.project_id].expense += Number(x.amount||0); });
+
+    reportResult.innerHTML = projects.map(p=>{
+      const billed = agg[p.id]?.billed || 0;
+      const exp = agg[p.id]?.expense || 0;
+      const net = billed - exp;
+      return `
+        <div class="project-card ${p.status==='Completed' ? 'project-completed' : 'project-ongoing'} p-4">
+          <div class="flex justify-between items-start">
+            <div>
+              <h3 class="text-lg font-semibold">${p.name} <span class="text-sm text-gray-500">#${p.id}</span></h3>
+              <div class="project-meta">Status: ${p.status} • Start: ${p.start_date || '-'} • Expected: ${p.expected_completion || '-'}</div>
+            </div>
+            <div class="text-right">
+              <div class="text-sm text-gray-500">Contract</div>
+              <div class="text-lg font-bold">${money(p.contract_value)}</div>
+            </div>
+          </div>
+          <div class="mt-3 grid grid-cols-3 gap-3">
+            <div class="p-2 bg-white rounded shadow text-center">
+              <div class="text-sm text-gray-500">Billed</div>
+              <div class="text-base font-semibold">${money(billed)}</div>
+            </div>
+            <div class="p-2 bg-white rounded shadow text-center">
+              <div class="text-sm text-gray-500">Expenses</div>
+              <div class="text-base font-semibold">${money(exp)}</div>
+            </div>
+            <div class="p-2 bg-white rounded shadow text-center">
+              <div class="text-sm text-gray-500">Net</div>
+              <div class="text-base font-semibold">${money(net)}</div>
+            </div>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+}
+
+async function renderDetailed(type, scope, projectId, timeline) {
+  reportResult.innerHTML = '';
+  if (!supabaseClient) { reportResult.textContent = 'Database not available.'; return; }
+
+  let incQuery = supabaseClient.from('income').select('*').order('date',{ascending:true});
+  let expQuery = supabaseClient.from('expense').select('*').order('date',{ascending:true});
+
+  // If a projectId is provided, always filter by that project
+  if (projectId) {
+    incQuery = incQuery.eq('project_id', projectId);
+    expQuery = expQuery.eq('project_id', projectId);
+  } else if (scope === 'single') {
+    // nothing to do, projectId empty — user asked single but didn't select
+  }
+
+  if (timeline !== 'all') {
+    const now = new Date();
+    let since = new Date();
+    if (timeline === '30') since.setDate(now.getDate()-30);
+    else if (timeline === '90') since.setDate(now.getDate()-90);
+    else if (timeline === 'month') { since = new Date(now.getFullYear(),now.getMonth(),1); }
+    incQuery = incQuery.gte('date', since.toISOString());
+    expQuery = expQuery.gte('date', since.toISOString());
+  }
+
+  const { data: incomes = [] } = await incQuery;
+  const { data: expenses = [] } = await expQuery;
+
+  if (type === 'income') {
+    let html = `<div><canvas id="incChart" height="140"></canvas></div><div class="overflow-x-auto"><table class="w-full text-sm mt-3"><thead><tr class="bg-slate-100"><th class="p-2 text-left">Date</th><th class="p-2 text-left">Bill</th><th class="p-2 text-right">Received</th></tr></thead><tbody>`;
+    (incomes||[]).forEach(i=>{
+      html += `<tr><td class="p-2">${i.date ? new Date(i.date).toLocaleDateString() : '-'}</td><td class="p-2">${i.bill_number||'-'}</td><td class="p-2 text-right">${money(i.received_amount)}</td></tr>`;
+    });
+    html += `</tbody></table></div>`;
+    reportResult.innerHTML = html;
+
+    const byMonth = {};
+    incomes.forEach(r=>{
+      const d = new Date(r.date||Date.now());
+      const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+      byMonth[key] = (byMonth[key]||0) + Number(r.received_amount||0);
+    });
+    const labels = Object.keys(byMonth).sort();
+    const data = labels.map(k=>byMonth[k]);
+    clearCharts();
+    const ctx = document.getElementById('incChart').getContext('2d');
+    activeCharts.push(new Chart(ctx,{type:'line',data:{labels,datasets:[{label:'Received',data,backgroundColor:'#60a5fa',borderColor:'#3b82f6',fill:true}]},options:{responsive:true,maintainAspectRatio:false}}));
+
+  } else if (type === 'expense') {
+    let html = `<div><canvas id="expChart" height="140"></canvas></div><div class="overflow-x-auto"><table class="w-full text-sm mt-3"><thead><tr class="bg-slate-100"><th class="p-2 text-left">Date</th><th class="p-2 text-left">Type</th><th class="p-2 text-right">Amount</th></tr></thead><tbody>`;
+    (expenses||[]).forEach(e=>{
+      html += `<tr><td class="p-2">${e.date ? new Date(e.date).toLocaleDateString() : '-'}</td><td class="p-2">${e.type||'-'}</td><td class="p-2 text-right">${money(e.amount)}</td></tr>`;
+    });
+    html += `</tbody></table></div>`;
+    reportResult.innerHTML = html;
+
+    const byCategory = {};
+    expenses.forEach(r=>{ const k = r.type || 'Other'; byCategory[k] = (byCategory[k]||0) + Number(r.amount||0); });
+    const labels = Object.keys(byCategory);
+    const data = labels.map(k=>byCategory[k]);
+    clearCharts();
+    const ctx = document.getElementById('expChart').getContext('2d');
+    activeCharts.push(new Chart(ctx,{type:'pie',data:{labels,datasets:[{data,backgroundColor:['#f87171','#fb923c','#f59e0b','#60a5fa','#34d399']}]},options:{responsive:true,maintainAspectRatio:false}}));
+  }
+}
+
+async function renderPL(scope, projectId, timeline) {
+  reportResult.innerHTML = '';
+  if (!supabaseClient) { reportResult.textContent = 'Database not available.'; return; }
+
+  let incQ = supabaseClient.from('income').select('received_amount').order('date',{ascending:true});
+  let expQ = supabaseClient.from('expense').select('amount').order('date',{ascending:true});
+  if (projectId) { incQ = incQ.eq('project_id', projectId); expQ = expQ.eq('project_id', projectId); }
+  if (timeline !== 'all') {
+    const now = new Date(); let since = new Date();
+    if (timeline === '30') since.setDate(now.getDate()-30);
+    else if (timeline === '90') since.setDate(now.getDate()-90);
+    else if (timeline === 'month') since = new Date(now.getFullYear(),now.getMonth(),1);
+    incQ = incQ.gte('date', since.toISOString()); expQ = expQ.gte('date', since.toISOString());
+  }
+
+  const { data: inc = [] } = await incQ;
+  const { data: exp = [] } = await expQ;
+  const totalIncome = inc.reduce((s,i)=>s+Number(i.received_amount||0),0);
+  const totalExpense = exp.reduce((s,e)=>s+Number(e.amount||0),0);
+
+  reportResult.innerHTML = `
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div class="bg-white p-4 rounded shadow text-center">
+        <div class="text-sm text-gray-500">Total Income</div>
+        <div class="text-2xl font-bold text-cyan-600">${money(totalIncome)}</div>
+      </div>
+      <div class="bg-white p-4 rounded shadow text-center">
+        <div class="text-sm text-gray-500">Total Expense</div>
+        <div class="text-2xl font-bold text-red-500">${money(totalExpense)}</div>
+      </div>
+      <div class="col-span-1 md:col-span-2 bg-white p-4 rounded shadow">
+        <canvas id="plChart" height="120"></canvas>
+      </div>
+    </div>
+  `;
+
+  clearCharts();
+  const ctx = document.getElementById('plChart').getContext('2d');
+  activeCharts.push(new Chart(ctx,{
+    type:'doughnut',
+    data:{ labels:['Income','Expense'], datasets:[{ data:[totalIncome,totalExpense], backgroundColor:['#06b6d4','#ef4444'] }] },
+    options:{ responsive:true, maintainAspectRatio:false }
+  }));
+}
+
+async function generateReport(){
+  if (!supabaseClient) { alert('Database client not ready.'); return; }
+
+  summarySection.classList.remove('hidden');
+  reportPad.classList.remove('hidden');
+  reportResult.innerHTML = '<p class="text-sm text-gray-500">Loading...</p>';
+  document.getElementById('padDate').textContent = dateNow();
+
+  const scope = scopeEl.value;
+  // projectId only considered for single/ongoing/completed scopes
+  let projectId = null;
+  if (scope === 'single' || scope === 'ongoing' || scope === 'completed') {
+    projectId = projectSelect && projectSelect.value ? projectSelect.value : null;
+  }
+
+  const type = reportType.value;
+  const timeline = timelineEl.value;
+
+  // compute summary values (filter by projectId when provided)
+  let contractTotal = 0, billedTotal = 0, projectExpenseTotal = 0;
+  if (projectId) {
+    const { data:[proj] = [] } = await supabaseClient.from('projects').select('contract_value').eq('id', projectId).limit(1);
+    contractTotal = Number(proj?.contract_value || 0);
+    const { data: inc = [] } = await supabaseClient.from('income').select('received_amount').eq('project_id', projectId);
+    const { data: ex = [] } = await supabaseClient.from('expense').select('amount').eq('project_id', projectId);
+    billedTotal = inc.reduce((s,i)=>s+Number(i.received_amount||0),0);
+    projectExpenseTotal = ex.reduce((s,e)=>s+Number(e.amount||0),0);
+  } else {
+    const { data: projs = [] } = await supabaseClient.from('projects').select('contract_value');
+    contractTotal = projs.reduce((s,p)=>s+Number(p.contract_value||0),0);
+    const { data: inc = [] } = await supabaseClient.from('income').select('received_amount');
+    const { data: ex = [] } = await supabaseClient.from('expense').select('amount');
+    billedTotal = inc.reduce((s,i)=>s+Number(i.received_amount||0),0);
+    projectExpenseTotal = ex.reduce((s,e)=>s+Number(e.amount||0),0);
+  }
+  const totalIncome = billedTotal;
+  const totalExpense = projectExpenseTotal;
+  const net = totalIncome - totalExpense;
+
+  document.getElementById('sumIncome').textContent = money(totalIncome);
+  document.getElementById('sumExpense').textContent = money(totalExpense);
+  document.getElementById('sumContract').textContent = money(contractTotal);
+  document.getElementById('sumBilled').textContent = money(billedTotal);
+  document.getElementById('sumProjectExpense').textContent = money(projectExpenseTotal);
+  document.getElementById('sumNet').textContent = money(net);
+
+  // render chosen report type
+  if (type === 'overview') await renderOverview(scope, projectId);
+  else if (type === 'income') await renderDetailed('income', scope, projectId, timeline);
+  else if (type === 'expense') await renderDetailed('expense', scope, projectId, timeline);
+  else if (type === 'pl') await renderPL(scope, projectId, timeline);
+
+  document.getElementById('padMeta').textContent = `${reportType.options[reportType.selectedIndex].text} • ${scopeEl.options[scopeEl.selectedIndex].text}${projectId ? ' • Project #' + projectId : ''}`;
+
+  // show print / download actions now
+  reportActions.classList.remove('hidden');
+}
+
+/* PDF export: include type, scope/projectId and timeline in filename */
+async function downloadPDF(){
+  const element = reportPad;
+  if (!element) return;
+  const type = reportType.value || 'report';
+  const scope = scopeEl.value || 'all';
+  const proj = (scope === 'single' || scope === 'ongoing' || scope === 'completed') ? (projectSelect.value || 'none') : 'all';
+  const timeline = timelineEl.value || 'all';
+  const filename = `report_${type}_${proj}_${timeline}_${(new Date()).toISOString().slice(0,10)}.pdf`;
+
+  const opt = {
+    margin:       10,
+    filename,
+    image:        { type: 'jpeg', quality: 0.98 },
+    html2canvas:  { scale: 2, useCORS: true },
+    jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+  };
+  const wasHidden = element.classList.contains('hidden');
+  element.classList.remove('hidden');
+  await html2pdf().set(opt).from(element).save();
+  if (wasHidden) element.classList.add('hidden');
+}
+
+/* init */
+window.addEventListener('load', async ()=>{
+  document.getElementById('padDate').textContent = dateNow();
+  await loadProjects(); // pre-load all projects to improve UX
 });
 </script>
 
