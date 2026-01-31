@@ -1,0 +1,47 @@
+/* ...basic project UI variables and core styles (kept compact) */
+:root{
+  --accent: #06b6d4;
+  --muted: #64748b;
+  --card-bg: #ffffff;
+  --surface: #f8fafc;
+}
+html { font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; }
+body { background: var(--surface); color: #0f172a; margin: 0; }
+
+/* header / bottom nav explicit backgrounds to avoid transparency */
+.app-header { background: #ffffff; }
+.bottom-nav { background: #ffffff; }
+
+/* summary grid */
+.summary-grid { display: grid; gap: 0.5rem; grid-template-columns: repeat(2, minmax(0,1fr)); }
+@media(min-width:640px){ .summary-grid { grid-template-columns: repeat(3, minmax(0,1fr)); } }
+
+/* summary cards */
+.summary-card {
+  background: var(--card-bg);
+  padding: 0.8rem;
+  border-radius: 0.6rem;
+  box-shadow: 0 6px 18px rgba(2,6,23,0.06);
+  display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; min-height:80px;
+}
+.summary-card .label { font-size:0.75rem; color:var(--muted); margin:0 0 0.3rem 0; }
+.summary-card .value { font-size:1.1rem; font-weight:800; }
+
+/* per-card colors */
+#card-income .value { color: #06b6d4; }
+#card-expense .value { color: #ef4444; }
+#card-ongoing .value { color: #f59e0b; }
+#card-completed .value { color: #10b981; }
+#card-contract .value { color: #7c3aed; }
+#card-bill-received .value { color: #6366f1; }
+
+/* project cards */
+.project-card { background: #fff; padding:0.9rem; border-radius:0.8rem; box-shadow:0 8px 24px rgba(2,6,23,0.04); display:flex; flex-direction:column; gap:0.35rem; }
+.project-meta { font-size:0.9rem; color:var(--muted); }
+.project-ongoing { background: linear-gradient(90deg,#ecfeff 0%,#f0f9ff 100%); border-left:4px solid #06b6d4; }
+.project-completed { background: linear-gradient(90deg,#f0fdf4 0%,#ecfdf5 100%); border-left:4px solid #10b981; }
+
+/* small helpers */
+.pad-header { border-bottom:1px solid #e6edf2; padding-bottom:0.5rem; margin-bottom:1rem; }
+.pad-company { font-weight:700; font-size:1.05rem; color:#0f172a; }
+.pad-meta { font-size:0.85rem; color:var(--muted); }
