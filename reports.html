@@ -25,6 +25,12 @@
     nav.bottom-nav, header.app-header, #printControls, #reportActions { display:none; }
     body { background: #fff; padding-bottom: 0; }
   }
+
+  /* smaller sidebar/menu font + slightly tighter spacing */
+  #sidebar { font-size: 0.92rem; }
+  #sidebar .p-6 { padding: 0.75rem 1rem; } /* reduce outer padding */
+  #sidebar nav a { font-size: 0.95rem; padding: 0.5rem 0.9rem; border-radius: 0.375rem; display:block; }
+  #sidebar nav a:hover { background-color: rgba(255,255,255,0.04); }
 </style>
 </head>
 <body>
@@ -40,16 +46,21 @@
 
 <!-- Sidebar overlay + static sidebar (same design as index) -->
 <div id="sidebar-overlay" class="fixed inset-0 hidden z-30" onclick="toggleSidebar()"></div>
-<aside id="sidebar" class="fixed top-0 left-0 w-64 bg-white text-gray-900 h-full transform -translate-x-full transition-transform z-40 shadow-lg">
-  <div class="p-4">
-    <h3 class="font-semibold mb-4">Menu</h3>
-    <nav class="flex flex-col gap-2">
-      <a href="index.html" class="py-2 px-3 rounded hover:bg-slate-50">Home</a>
-      <a href="income.html" class="py-2 px-3 rounded hover:bg-slate-50">Income</a>
-      <a href="expense.html" class="py-2 px-3 rounded hover:bg-slate-50">Expense</a>
-      <a href="projects.html" class="py-2 px-3 rounded hover:bg-slate-50">Projects</a>
-      <a href="reports.html" class="py-2 px-3 rounded bg-slate-100">Reports</a>
-    </nav>
+<aside id="sidebar" class="fixed top-0 left-0 w-64 bg-blue-900 text-white h-full transform -translate-x-full transition-transform z-40">
+  <div class="p-6 text-xl font-semibold border-b border-blue-800 flex justify-between items-center">
+
+    <nav class="mt-6 space-y-1">
+    <a href="index.html" class="block px-6 py-3 hover:bg-blue-800 rounded bg-blue-800">🏠 Dashboard</a>
+    <a href="projects.html" class="block px-6 py-3 hover:bg-blue-800 rounded mt-1">🏗️ Projects</a>
+    <a href="project-add.html" class="block px-6 py-3 hover:bg-blue-800 rounded mt-1">➕ Add Project</a>
+    <a href="modify.html" class="block px-6 py-3 hover:bg-blue-800 rounded mt-1">✏️ Modify Page</a>
+    <a href="income.html" class="block px-6 py-3 hover:bg-blue-800 rounded mt-1">💰 Income</a>
+    <a href="income-add.html" class="block px-6 py-3 hover:bg-blue-800 rounded mt-1">➕ Add Income</a>
+    <a href="expense.html" class="block px-6 py-3 hover:bg-blue-800 rounded mt-1">💸 Expense</a>
+    <a href="expense-add.html" class="block px-6 py-3 hover:bg-blue-800 rounded mt-1">➕ Add Expense</a>
+    <a href="reports.html" class="block px-6 py-3 hover:bg-blue-800 rounded mt-1">📊 Reports</a>
+    <a href="settings.html" class="block px-6 py-3 hover:bg-blue-800 rounded mt-1">⚙️ Settings</a>
+  </nav>
   </div>
 </aside>
 
