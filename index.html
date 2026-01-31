@@ -23,10 +23,10 @@
   .summary-grid { display: grid; gap: 0.5rem; grid-template-columns: repeat(2, minmax(0,1fr)); }
   @media(min-width:640px){ .summary-grid { grid-template-columns: repeat(3, minmax(0,1fr)); } }
 
-  /* summary cards: center labels and values */
+  /* summary cards: center labels and values (font sizes increased) */
   .summary-card {
     background: var(--card-bg);
-    padding: 0.6rem;
+    padding: 0.8rem;               /* slightly more padding */
     border-radius: 0.6rem;
     box-shadow: 0 6px 18px rgba(2,6,23,0.06);
     display:flex;
@@ -34,10 +34,10 @@
     justify-content:center; /* center vertically */
     align-items:center;     /* center horizontally */
     text-align:center;      /* center text */
-    min-height:64px;
+    min-height:80px;        /* increased height to accommodate larger text */
   }
-  .summary-card .label { font-size:0.65rem; color:var(--muted); margin:0 0 0.25rem 0; line-height:1; }
-  .summary-card .value { font-size:0.95rem; font-weight:700; line-height:1; display:block; }
+  .summary-card .label { font-size:0.75rem; color:var(--muted); margin:0 0 0.3rem 0; line-height:1; }
+  .summary-card .value { font-size:1.1rem; font-weight:800; line-height:1; display:block; }
 
   /* per-card value colors */
   #card-income .value { color: #06b6d4; }       /* cyan */
@@ -47,8 +47,13 @@
   #card-contract .value { color: #7c3aed; }     /* violet */
   #card-bill-received .value { color: #6366f1; }/* indigo */
 
-  /* larger screens: allow 6 across on very wide */
-  @media(min-width:1024px){ .summary-grid { grid-template-columns: repeat(3, minmax(0,1fr)); gap:0.75rem; } .summary-card .value{font-size:1rem} }
+  /* larger screens: slightly larger card values */
+  @media(min-width:1024px){
+    .summary-grid { grid-template-columns: repeat(3, minmax(0,1fr)); gap:0.75rem; }
+    .summary-card .value { font-size:1.25rem; }
+    .summary-card { padding:1rem; min-height:88px; }
+  }
+
   header h1 { color:#0f172a; }
 
   /* project cards: base style */
