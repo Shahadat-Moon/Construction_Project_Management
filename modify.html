@@ -21,6 +21,10 @@
     .badge-expense { background:#fff1f2; color:#7f1d1d; border:1px solid #ef4444 }
     .btn-danger { color:#b91c1c; border:1px solid #fca5a5 }
     textarea { min-height:72px }
+    .toast { position:fixed; right:1rem; bottom:5.5rem; padding:0.6rem 1rem; border-radius:0.75rem; box-shadow:0 8px 24px rgba(2,6,23,0.12); color:#fff; display:none; z-index:60 }
+    .toast.show { display:flex; align-items:center }
+    .toast-success { background: linear-gradient(90deg,#059669,#10b981) }
+    .toast-error { background: linear-gradient(90deg,#ef4444,#f97316) }
   </style>
 </head>
 <body>
@@ -109,6 +113,9 @@
     </div>
   </div>
 </div>
+
+    <!-- Toast -->
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
 <script>
   // Sidebar toggle (copied from index)
@@ -357,7 +364,11 @@
     if (!id) return alert('Cannot determine id field')
     const table = currentDetailType === 'income' ? 'income' : (currentDetailType === 'expense' ? 'expense' : 'projects')
     const { error } = await supabase.from(table).update(payload).eq('id', id)
-    if (error) return alert('Update failed: '+error.message)
+    if (error) {
+      showToast('Update failed: ' + error.message, false)
+      return
+    }
+    showToast('Updated successfully', true)
     closeModal(); loadDetails()
   }
   saveEdit.addEventListener('click', saveEditChanges)
@@ -368,13 +379,25 @@
     if (!confirm('Delete this entry? This cannot be undone.')) return
     const table = currentDetailType === 'income' ? 'income' : (currentDetailType === 'expense' ? 'expense' : 'projects')
     const { error } = await supabase.from(table).delete().eq('id', id)
-    if (error) return alert('Delete failed: '+error.message)
+    if (error) { showToast('Delete failed: ' + error.message, false); return }
+    showToast('Deleted successfully', true)
     loadDetails()
   }
 
   loadOngoingProjects()
   loadBtn.addEventListener('click', loadDetails)
+
+  // Toast helper
+  let toastTimer = null
+  function showToast(msg, success = true){
+    const t = document.getElementById('toast')
+    t.textContent = msg
+    t.className = 'toast show ' + (success ? 'toast-success' : 'toast-error')
+    if (toastTimer) clearTimeout(toastTimer)
+    toastTimer = setTimeout(()=>{ t.className = 'toast' }, 3000)
+  }
 </script>
 
 </body>
 </html>
+
