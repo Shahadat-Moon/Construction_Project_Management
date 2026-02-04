@@ -9,15 +9,38 @@
 
 </head>
 
-<body class="bg-slate-100 min-h-screen">
+<body class="bg-gray-100">
 
 <!-- Header -->
-<header class="bg-white shadow px-4 py-3 flex justify-between items-center sticky top-0 z-10">
-  <h1 class="text-lg font-semibold">Projects</h1>
-  <img src="logo.jpg" alt="Company Logo" class="h-8 w-auto cursor-pointer">
+<header class="bg-white shadow px-4 py-3 flex justify-between items-center sticky top-0 z-20">
+  <button id="menu-btn" class="text-slate-700 text-xl md:text-2xl font-semibold">☰</button>
+  <h1 class="text-lg md:text-2xl font-semibold tracking-tight">M/S S.R. Suppliers</h1>
+  <img src="logo.jpg" alt="Company Logo" class="h-9 w-auto">
 </header>
 
-<main class="p-4 pb-28 space-y-6">
+<!-- Sidebar overlay -->
+<div id="sidebar-overlay" class="fixed inset-0 hidden z-30" onclick="toggleSidebar()"></div>
+
+<!-- Sidebar -->
+<aside id="sidebar" class="fixed top-0 left-0 w-64 bg-blue-900 text-white h-full transform -translate-x-full transition-transform z-40">
+  <div class="p-6 text-xl font-bold border-b border-blue-800 flex justify-between items-center">
+    Menu
+    <button onclick="toggleSidebar()" class="text-white text-lg font-bold">×</button>
+  </div>
+  <nav class="mt-6 space-y-1">
+    <a href="index.html" class="block px-6 py-3 hover:bg-blue-800 rounded bg-blue-800">🏠 Dashboard</a>
+    <a href="projects.html" class="block px-6 py-3 hover:bg-blue-800 rounded mt-1">🏗️ Projects</a>
+    <a href="project-add.html" class="block px-6 py-3 hover:bg-blue-800 rounded mt-1">➕ Add Project</a>
+    <a href="modify.html" class="block px-6 py-3 hover:bg-blue-800 rounded mt-1">✏️ Modify Page</a>
+    <a href="income.html" class="block px-6 py-3 hover:bg-blue-800 rounded mt-1">💰 Income</a>
+    <a href="income-add.html" class="block px-6 py-3 hover:bg-blue-800 rounded mt-1">➕ Add Income</a>
+    <a href="expense.html" class="block px-6 py-3 hover:bg-blue-800 rounded mt-1">💸 Expense</a>
+    <a href="expense-add.html" class="block px-6 py-3 hover:bg-blue-800 rounded mt-1">➕ Add Expense</a>
+    <a href="reports.html" class="block px-6 py-3 hover:bg-blue-800 rounded mt-1">📊 Reports</a>
+  </nav>
+</aside>
+
+<main id="main" class="p-6 space-y-6 max-w-4xl mx-auto">
 
   <!-- Ongoing Projects -->
   <section>
@@ -112,6 +135,13 @@
 
   // Load projects on page load
   loadProjects();
+
+  // Sidebar toggle
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('sidebar-overlay');
+  const menuBtn = document.getElementById('menu-btn');
+  function toggleSidebar(){ sidebar.classList.toggle('-translate-x-full'); overlay.classList.toggle('hidden'); }
+  menuBtn.addEventListener('click', toggleSidebar);
 </script>
 
 </body>
