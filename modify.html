@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Modify Entries - M/S S.R. Suppliers</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{ --accent:#06b6d4; --muted:#64748b; --card-bg:#ffffff; --surface:#f8fafc }
+    html { font-family: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; }
+    body { background:var(--surface); color:#0f172a }
+    header h1{ color:#0f172a }
+    .project-card { background: #fff; padding:0.9rem; border-radius:0.8rem; box-shadow:0 8px 24px rgba(2,6,23,0.04); display:flex; flex-direction:column; gap:0.35rem; cursor:pointer; transition:transform .12s ease, box-shadow .12s ease; }
+    .project-card:hover { transform:translateY(-4px); box-shadow:0 12px 30px rgba(2,6,23,0.08); }
+    .project-meta { font-size:0.8rem; color:var(--muted); }
+    .card-accent { border-left: 4px solid var(--accent); }
+    .badge { display:inline-block; padding:0.25rem 0.5rem; border-radius:999px; font-size:0.7rem; font-weight:700 }
+    .badge-income { background:#ecfeff; color:#065f46; border:1px solid #06b6d4 }
+    .badge-expense { background:#fff1f2; color:#7f1d1d; border:1px solid #ef4444 }
+    .btn-danger { color:#b91c1c; border:1px solid #fca5a5 }
+    textarea { min-height:72px }
+  </style>
+</head>
+<body>
+
+<!-- Header (same as index) -->
+<header class="bg-white shadow px-4 py-3 flex justify-between items-center sticky top-0 z-20">
+  <button id="menu-btn" class="text-slate-700 text-xl md:text-2xl font-semibold">☰</button>
+  <h1 class="text-lg md:text-2xl font-semibold tracking-tight">M/S S.R. Suppliers</h1>
+  <img src="logo.jpg" alt="Company Logo" class="h-9 w-auto">
+</header>
+
+<!-- Sidebar overlay -->
+<div id="sidebar-overlay" class="fixed inset-0 hidden z-30" onclick="toggleSidebar()"></div>
+
+<!-- Sidebar (same links) -->
+<aside id="sidebar" class="fixed top-0 left-0 w-64 bg-blue-900 text-white h-full transform -translate-x-full transition-transform z-40">
+  <div class="p-6 text-xl font-bold border-b border-blue-800 flex justify-between items-center">
+    Menu
+    <button onclick="toggleSidebar()" class="text-white text-lg font-bold">×</button>
+  </div>
+  <nav class="mt-6 space-y-1">
+    <a href="index.html" class="block px-6 py-3 hover:bg-blue-800 rounded bg-blue-800">🏠 Dashboard</a>
+    <a href="projects.html" class="block px-6 py-3 hover:bg-blue-800 rounded mt-1">🏗️ Projects</a>
+    <a href="project-add.html" class="block px-6 py-3 hover:bg-blue-800 rounded mt-1">➕ Add Project</a>
+    <a href="modify.html" class="block px-6 py-3 hover:bg-blue-800 rounded mt-1">✏️ Modify Page</a>
+    <a href="income.html" class="block px-6 py-3 hover:bg-blue-800 rounded mt-1">💰 Income</a>
+    <a href="income-add.html" class="block px-6 py-3 hover:bg-blue-800 rounded mt-1">➕ Add Income</a>
+    <a href="expense.html" class="block px-6 py-3 hover:bg-blue-800 rounded mt-1">💸 Expense</a>
+    <a href="expense-add.html" class="block px-6 py-3 hover:bg-blue-800 rounded mt-1">➕ Add Expense</a>
+    <a href="reports.html" class="block px-6 py-3 hover:bg-blue-800 rounded mt-1">📊 Reports</a>
+  </nav>
+</aside>
+
+<!-- Main -->
+<div id="main" class="p-6 max-w-4xl mx-auto space-y-6">
+
+  <div class="bg-white rounded-2xl shadow p-4 mb-4">
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 items-end">
+      <div>
+        <label class="text-sm font-medium">Select Project (Ongoing)</label>
+        <select id="projectSelect" class="mt-2 w-full border rounded-lg p-2">
+          <option value="">-- Select Project --</option>
+        </select>
+      </div>
+
+      <div>
+        <label class="text-sm font-medium">Details</label>
+        <select id="detailType" class="mt-2 w-full border rounded-lg p-2">
+          <option value="">-- Choose --</option>
+          <option value="project">Project Details</option>
+          <option value="income">Income Details</option>
+          <option value="expense">Expense Details</option>
+        </select>
+      </div>
+
+      <div class="flex gap-2">
+        <button id="loadBtn" class="bg-blue-600 text-white px-4 py-2 rounded-lg">Load</button>
+        <div id="status" class="text-sm text-gray-500 self-center"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="list" class="space-y-4"></div>
+
+</div>
+
+<!-- Bottom Tabs (same as index) -->
+<nav class="fixed bottom-0 left-0 right-0 bg-white border-t shadow z-20">
+  <div class="grid grid-cols-5 text-xs text-gray-600">
+    <a href="index.html" class="py-3 flex flex-col items-center">🏠<span>Home</span></a>
+    <a href="income.html" class="py-3 flex flex-col items-center">💰<span>Income</span></a>
+    <a href="expense.html" class="py-3 flex flex-col items-center">💸<span>Expense</span></a>
+    <a href="projects.html" class="py-3 flex flex-col items-center">🏗️<span>Project</span></a>
+    <a href="reports.html" class="py-3 flex flex-col items-center">📊<span>Report</span></a>
+  </div>
+</nav>
+
+<!-- Edit Modal -->
+<div id="editModal" class="fixed inset-0 hidden items-start pt-20 justify-center bg-black/40 z-50">
+  <div class="bg-white rounded-2xl p-4 w-11/12 max-w-3xl max-h-[80vh] overflow-auto">
+    <h2 class="text-lg font-bold mb-2">Edit Entry</h2>
+    <form id="editForm" class="space-y-3"></form>
+    <div class="flex justify-end gap-2 mt-4">
+      <button id="cancelEdit" class="px-4 py-2 rounded-lg border">Cancel</button>
+      <button id="saveEdit" class="px-4 py-2 rounded-lg bg-green-600 text-white">Save</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Sidebar toggle (copied from index)
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('sidebar-overlay');
+  const menuBtn = document.getElementById('menu-btn');
+  function toggleSidebar(){ sidebar.classList.toggle('-translate-x-full'); overlay.classList.toggle('hidden'); }
+  menuBtn.addEventListener('click', toggleSidebar);
+
+  const SUPABASE_URL = 'https://sbqyxvxpeqipcuavryhb.supabase.co'
+  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNicXl4dnhwZXFpcGN1YXZyeWhiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjkxNTk0NjcsImV4cCI6MjA4NDczNTQ2N30.XWbqg5fwC3TDFt-G79H-SGg-9WMdV08qkZ6OzdPK8f8'
+  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
+
+  const projectSelect = document.getElementById('projectSelect')
+  const detailType = document.getElementById('detailType')
+  const loadBtn = document.getElementById('loadBtn')
+  const list = document.getElementById('list')
+  const status = document.getElementById('status')
+
+  const editModal = document.getElementById('editModal')
+  const editForm = document.getElementById('editForm')
+  const cancelEdit = document.getElementById('cancelEdit')
+  const saveEdit = document.getElementById('saveEdit')
+
+  let currentProjectId = null
+  let currentRows = []
+  let currentDetailType = null
+  let currentEditRow = null
+
+  async function loadOngoingProjects(){
+    const { data, error } = await supabase.from('projects').select('id,name').eq('status','Ongoing').order('name')
+    if (error) { console.error(error); status.textContent = 'Failed to load projects'; return }
+    data.forEach(p => {
+      const opt = document.createElement('option')
+      opt.value = p.id
+      opt.textContent = `${p.name} (${p.id})`
+      projectSelect.appendChild(opt)
+    })
+  }
+
+  function renderList(rows){
+    list.innerHTML = ''
+    if (!rows || rows.length === 0) { list.innerHTML = '<p class="text-gray-500">No entries found.</p>'; return }
+
+    const fmtCurrency = v => '৳ ' + (Number(v||0)).toLocaleString()
+    const fmtDate = d => { try { return new Date(d).toLocaleDateString() } catch(e){ return d||'-' } }
+
+    rows.forEach(row => {
+      const card = document.createElement('div')
+      let baseClass = 'bg-white p-4 rounded-2xl shadow flex justify-between items-start gap-4 card-accent'
+      if (currentDetailType === 'expense') baseClass += ' border-red-100'
+      if (currentDetailType === 'income') baseClass += ' border-green-100'
+      card.className = baseClass
+
+      const left = document.createElement('div')
+      left.className = 'flex-1'
+
+      // Title / primary line
+      const title = document.createElement('div')
+      title.className = 'font-semibold text-sm text-slate-800'
+      // Subtitle area
+      const meta = document.createElement('div')
+      meta.className = 'text-xs text-slate-500 mt-1 space-y-1'
+
+      if (currentDetailType === 'project'){
+        title.textContent = row.name || ('Project ' + (row.id||''))
+        meta.innerHTML = `
+          <div class="project-meta">Location: ${row.location || '-'}</div>
+          <div class="project-meta">Contract: ${fmtCurrency(row.contract_value)}</div>
+          <div class="project-meta">Status: ${row.status || '-'}</div>
+          <div class="project-meta">Start: ${fmtDate(row.start_date)} | Expected: ${fmtDate(row.expected_completion)}</div>
+        `
+      } else if (currentDetailType === 'income'){
+        title.textContent = row.bill_number ? `Bill ${row.bill_number}` : `Income ${row.id || ''}`
+        meta.innerHTML = `
+          <div class="project-meta">Date: ${fmtDate(row.date || row.received_at)}</div>
+          <div class="project-meta">Gross: ${fmtCurrency(row.gross_amount)} | Received: ${fmtCurrency(row.received_amount)}</div>
+          <div class="project-meta">VAT: ${fmtCurrency(row.vat)} | Tax: ${fmtCurrency(row.tax)} | Retention: ${fmtCurrency(row.retention)}</div>
+          <div class="project-meta">Notes: ${row.notes || '-'}</div>
+        `
+      } else if (currentDetailType === 'expense'){
+        title.textContent = row.type || `Expense ${row.id || ''}`
+        meta.innerHTML = `
+          <div class="project-meta">Date: ${fmtDate(row.date)}</div>
+          <div class="project-meta">Amount: ${fmtCurrency(row.amount)} | Paid: ${fmtCurrency(row.paid_amount)}</div>
+          <div class="project-meta">Notes: ${row.notes || row.details || '-'}</div>
+        `
+      } else {
+        title.textContent = row.name || (row.type || ('ID: '+(row.id||row.ID||row.Id)))
+        meta.textContent = JSON.stringify(row)
+      }
+
+      left.appendChild(title)
+      left.appendChild(meta)
+
+      const right = document.createElement('div')
+      right.className = 'flex flex-col gap-2'
+      const editBtn = document.createElement('button')
+      editBtn.className = 'px-3 py-1 rounded-lg bg-blue-600 text-white'
+      editBtn.textContent = 'Edit'
+      editBtn.onclick = () => openEdit(row)
+      const delBtn = document.createElement('button')
+      delBtn.className = 'px-3 py-1 rounded-lg border text-red-600'
+      delBtn.textContent = 'Delete'
+      delBtn.onclick = () => confirmDelete(row)
+      right.appendChild(editBtn)
+      right.appendChild(delBtn)
+
+      card.appendChild(left)
+      card.appendChild(right)
+      list.appendChild(card)
+    })
+  }
+
+  async function loadDetails(){
+    list.innerHTML = ''
+    status.textContent = 'Loading...'
+    const pid = projectSelect.value
+    const dt = detailType.value
+    currentProjectId = pid
+    currentDetailType = dt
+    if (!pid || !dt) { status.textContent = 'Select project and details'; return }
+
+    try{
+      if (dt === 'project'){
+        const { data, error } = await supabase.from('projects').select('*').eq('id', pid)
+        if (error) throw error
+        renderList(data)
+      } else if (dt === 'income'){
+        const { data, error } = await supabase.from('income').select('*').eq('project_id', pid).order('date',{ascending:false})
+        if (error) throw error
+        renderList(data)
+      } else if (dt === 'expense'){
+        const { data, error } = await supabase.from('expense').select('*').eq('project_id', pid).order('date',{ascending:false})
+        if (error) throw error
+        renderList(data)
+      }
+      status.textContent = 'Loaded'
+    }catch(err){
+      console.error(err)
+      status.textContent = 'Failed to load data'
+    }
+  }
+
+  function openEdit(row){
+    currentEditRow = row
+    editForm.innerHTML = ''
+
+    // Helper to create a field
+    const field = (name, labelText, el) => {
+      const wrapper = document.createElement('div')
+      const label = document.createElement('label')
+      label.className = 'text-sm font-medium'
+      label.textContent = labelText
+      el.name = name
+      el.className = el.className || 'mt-1 w-full border rounded-lg p-2'
+      wrapper.appendChild(label)
+      wrapper.appendChild(el)
+      editForm.appendChild(wrapper)
+      return el
+    }
+
+    // Show different forms depending on detail type
+    if (currentDetailType === 'income'){
+      // Project (disabled)
+      const p = document.createElement('input'); p.type='text'; p.disabled=true; p.value = row.project_id || row.project || ''
+      field('project_id', 'Project ID', p)
+
+      const date = document.createElement('input'); date.type='date'; try{ date.value = new Date(row.date || row.received_at).toISOString().split('T')[0] }catch(e){}
+      field('date', 'Bill Date', date)
+
+      const bill = document.createElement('input'); bill.type='text'; bill.value = row.bill_number || ''
+      field('bill_number', 'Bill Number', bill)
+
+      const gross = document.createElement('input'); gross.type='number'; gross.value = row.gross_amount || row.gross || ''
+      field('gross_amount', 'Gross Amount', gross)
+
+      const vat = document.createElement('input'); vat.type='number'; vat.value = row.vat || 0
+      field('vat', 'VAT', vat)
+
+      const tax = document.createElement('input'); tax.type='number'; tax.value = row.tax || 0
+      field('tax', 'Tax', tax)
+
+      const retention = document.createElement('input'); retention.type='number'; retention.value = row.retention || 0
+      field('retention', 'Retention', retention)
+
+      const notes = document.createElement('textarea'); notes.value = row.notes || ''
+      field('notes', 'Notes', notes)
+
+    } else if (currentDetailType === 'expense'){
+      const p = document.createElement('input'); p.type='text'; p.disabled=true; p.value = row.project_id || row.project || ''
+      field('project_id', 'Project ID', p)
+
+      const date = document.createElement('input'); date.type='date'; try{ date.value = new Date(row.date).toISOString().split('T')[0] }catch(e){}
+      field('date', 'Expense Date', date)
+
+      // Predefined expense types (same as add page)
+      const typeSel = document.createElement('select')
+      const types = ['Labour','Material','Cement','Steel','Sand','Transport','Equipment Rent','Fuel','Site Office','Electricity','Water','Security','Miscellaneous']
+      types.forEach(t=>{ const o=document.createElement('option'); o.value=t; o.textContent=t; if (row.type===t || row.expense_type===t) o.selected=true; typeSel.appendChild(o) })
+      field('type', 'Expense Type', typeSel)
+
+      const amount = document.createElement('input'); amount.type='number'; amount.value = row.amount || row.total_amount || ''
+      field('amount', 'Total Amount', amount)
+
+      const paid = document.createElement('input'); paid.type='number'; paid.value = row.paid_amount || row.paid || 0
+      field('paid_amount', 'Paid Amount', paid)
+
+      const notes = document.createElement('textarea'); notes.value = row.notes || row.details || ''
+      field('notes', 'Notes', notes)
+
+    } else {
+      // Generic project edit (projects table)
+      const name = document.createElement('input'); name.type='text'; name.value = row.name || ''
+      field('name','Project Name', name)
+
+      const loc = document.createElement('input'); loc.type='text'; loc.value = row.location || ''
+      field('location','Location', loc)
+
+      const contract = document.createElement('input'); contract.type='number'; contract.value = row.contract_value || ''
+      field('contract_value','Contract Value', contract)
+
+      const status = document.createElement('select'); ['ongoing','completed'].forEach(s=>{ const o=document.createElement('option'); o.value=s; o.textContent = s[0].toUpperCase()+s.slice(1); if (row.status && row.status.toLowerCase()===s) o.selected=true; status.appendChild(o) })
+      field('status','Status', status)
+    }
+
+    // hidden id field
+    const hid = document.createElement('input'); hid.type='hidden'; hid.name='id'; hid.value = row.id || row.ID || row.Id || ''
+    editForm.appendChild(hid)
+
+    editModal.classList.remove('hidden'); editModal.classList.add('flex')
+  }
+
+  cancelEdit.addEventListener('click', (e)=>{ e.preventDefault(); closeModal() })
+  function closeModal(){ editModal.classList.add('hidden'); editModal.classList.remove('flex'); currentEditRow=null }
+
+  async function saveEditChanges(e){
+    e.preventDefault(); if (!currentEditRow) return
+    const formData = new FormData(editForm); const payload = {}
+    for (let [k,v] of formData.entries()){
+      if (k==='id') continue
+      if (v!=='' && !isNaN(v) && !v.includes('-') && !v.includes(':')) payload[k]=Number(v)
+      else payload[k]=v
+    }
+    const id = currentEditRow.id ?? currentEditRow.ID ?? currentEditRow.Id
+    if (!id) return alert('Cannot determine id field')
+    const table = currentDetailType === 'income' ? 'income' : (currentDetailType === 'expense' ? 'expense' : 'projects')
+    const { error } = await supabase.from(table).update(payload).eq('id', id)
+    if (error) return alert('Update failed: '+error.message)
+    closeModal(); loadDetails()
+  }
+  saveEdit.addEventListener('click', saveEditChanges)
+
+  async function confirmDelete(row){
+    const id = row.id ?? row.ID ?? row.Id
+    if (!id) return alert('Cannot determine id to delete')
+    if (!confirm('Delete this entry? This cannot be undone.')) return
+    const table = currentDetailType === 'income' ? 'income' : (currentDetailType === 'expense' ? 'expense' : 'projects')
+    const { error } = await supabase.from(table).delete().eq('id', id)
+    if (error) return alert('Delete failed: '+error.message)
+    loadDetails()
+  }
+
+  loadOngoingProjects()
+  loadBtn.addEventListener('click', loadDetails)
+</script>
+
+</body>
+</html>
