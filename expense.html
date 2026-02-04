@@ -18,6 +18,8 @@
   @media (min-width:640px){ .expense-row { font-size:0.92rem; } }
   /* hide notes on small screens, reveal when the row has .show-details */
   @media (max-width:639px){ .notes-col { display:none; } .expense-row.show-details .notes-col { display:block; } }
+  .chev { display:inline-block; transition:transform .18s ease; color:#c7b9f6; margin-left:0.5rem }
+  .expense-row.show-details .chev { transform:rotate(180deg); color:#7c3aed }
 </style>
 </head>
 
@@ -128,10 +130,10 @@
           <div class="flex items-center gap-3">
             <div class="expense-date text-xs text-slate-700 font-semibold">${new Date(e.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</div>
             <div class="expense-type text-slate-800 font-medium">${e.type}</div>
-            <div class="notes-col text-xs ml-2">${e.notes || '-'}</div>
           </div>
-          <div class="text-right">
+          <div class="flex items-center">
             <div class="text-sm font-semibold text-red-600">৳ ${Number(e.amount).toLocaleString()}</div>
+            <div class="chev">▾</div>
           </div>
         </div>
       `).join('')
@@ -151,10 +153,23 @@
 
       container.appendChild(card)
 
-      // make rows tappable to reveal hidden details on small screens
-      const rowsEls = card.querySelectorAll('.expense-row');
-      rowsEls.forEach(r => {
-        r.addEventListener('click', () => r.classList.toggle('show-details'));
+      // attach tappable detail rows (inserted below each entry)
+      const rowEls = card.querySelectorAll('.expense-row');
+      rowEls.forEach((row, idx) => {
+        const entry = grouped[projectId][idx];
+        const detail = document.createElement('div');
+        detail.className = 'expense-detail px-3 py-2 text-sm text-gray-600 bg-gray-50 rounded mt-1';
+        detail.style.display = 'none';
+        detail.innerHTML = `
+          <div>Notes: ${entry.notes || '-'}</div>
+          <div>Paid: ৳ ${Number(entry.paid_amount||0).toLocaleString()}</div>
+        `;
+        row.insertAdjacentElement('afterend', detail);
+        row.addEventListener('click', ()=>{
+          const shown = detail.style.display === 'block';
+          detail.style.display = shown ? 'none' : 'block';
+          row.classList.toggle('show-details', !shown);
+        });
       });
     })
   }
