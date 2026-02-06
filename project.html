@@ -138,7 +138,7 @@ async function loadProject() {
   document.getElementById("p_status").innerText = data.status;
   document.getElementById("p_location").innerText = data.location || "-";
   document.getElementById("p_authority").innerText = data.authority || "-";
-  document.getElementById("p_contract").innerText = data.contract_no || "-";
+  document.getElementById("p_contract").innerText = data.contract_number || "-";
   document.getElementById("p_value").innerText = data.contract_value || 0;
   document.getElementById("p_start").innerText = data.start_date || "-";
   document.getElementById("p_expected").innerText = data.expected_completion || "-";
