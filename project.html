@@ -43,16 +43,18 @@
 <main class="p-6 pb-28 max-w-4xl mx-auto space-y-6">
 
 <!-- PROJECT INFO -->
-<section class="bg-white rounded-xl shadow p-4 space-y-2">
-  <h2 class="font-semibold text-gray-700 mb-2">Project Information</h2>
+<section class="bg-gradient-to-br from-slate-50 to-white rounded-2xl shadow-lg p-5 space-y-3">
+  <h2 class="font-semibold text-gray-700 tracking-wide">Project Information</h2>
 
-  <div class="grid grid-cols-1 gap-1 text-sm">
+  <div class="grid grid-cols-1 gap-1 text-sm text-gray-600">
     <p><strong>ID:</strong> <span id="p_id"></span></p>
     <p><strong>Status:</strong> <span id="p_status"></span></p>
     <p><strong>Location:</strong> <span id="p_location"></span></p>
     <p><strong>Authority:</strong> <span id="p_authority"></span></p>
     <p><strong>Contract No:</strong> <span id="p_contract"></span></p>
-    <p><strong>Contract Value:</strong> ৳ <span id="p_value"></span></p>
+    <p class="text-base font-semibold text-emerald-700">
+      Contract Value: ৳ <span id="p_value"></span>
+    </p>
     <p><strong>Start Date:</strong> <span id="p_start"></span></p>
     <p><strong>Expected End:</strong> <span id="p_expected"></span></p>
     <p><strong>Completion Date:</strong> <span id="p_actual"></span></p>
@@ -65,41 +67,58 @@
 </div>
 
 <!-- FINANCIAL SUMMARY -->
-<section class="grid grid-cols-2 gap-4">
-  <div class="bg-white p-4 rounded-xl shadow">
-    <p class="text-xs text-gray-500">Total Bill</p>
-    <p id="totalBill" class="font-bold text-lg">৳ 0</p>
+<section class="grid grid-cols-2 gap-4 text-center">
+  
+  <div class="bg-gradient-to-br from-emerald-50 to-emerald-100 p-5 rounded-2xl shadow-md">
+    <p class="text-xs uppercase tracking-widest text-emerald-600">Gross Bill</p>
+    <p id="totalBill" class="font-extrabold text-xl text-emerald-800">৳ 0</p>
   </div>
-  <div class="bg-white p-4 rounded-xl shadow">
-    <p class="text-xs text-gray-500">Total Received</p>
-    <p id="totalReceived" class="font-bold text-lg text-green-700">৳ 0</p>
+
+  <div class="bg-gradient-to-br from-indigo-50 to-indigo-100 p-5 rounded-2xl shadow-md">
+    <p class="text-xs uppercase tracking-widest text-indigo-600">VAT</p>
+    <p id="vat" class="font-extrabold text-xl text-indigo-800">৳ 0</p>
   </div>
-  <div class="bg-white p-4 rounded-xl shadow">
-    <p class="text-xs text-gray-500">Total Expense</p>
-    <p id="totalExpense" class="font-bold text-lg text-red-600">৳ 0</p>
+
+  <div class="bg-gradient-to-br from-purple-50 to-purple-100 p-5 rounded-2xl shadow-md">
+    <p class="text-xs uppercase tracking-widest text-purple-600">Tax</p>
+    <p id="tax" class="font-extrabold text-xl text-purple-800">৳ 0</p>
   </div>
-  <div class="bg-white p-4 rounded-xl shadow">
-    <p class="text-xs text-gray-500">Balance</p>
-    <p id="balance" class="font-bold text-lg text-blue-700">৳ 0</p>
+
+  <div class="bg-gradient-to-br from-green-50 to-green-100 p-5 rounded-2xl shadow-md">
+    <p class="text-xs uppercase tracking-widest text-green-600">Received</p>
+    <p id="totalReceived" class="font-extrabold text-xl text-green-800">৳ 0</p>
   </div>
+
+  <div class="bg-gradient-to-br from-rose-50 to-rose-100 p-5 rounded-2xl shadow-md">
+    <p class="text-xs uppercase tracking-widest text-rose-600">Expense</p>
+    <p id="totalExpense" class="font-extrabold text-xl text-rose-800">৳ 0</p>
+  </div>
+
+  <div class="bg-gradient-to-br from-sky-50 to-sky-100 p-5 rounded-2xl shadow-md">
+    <p class="text-xs uppercase tracking-widest text-sky-600">Balance</p>
+    <p id="balance" class="font-extrabold text-xl text-sky-800">৳ 0</p>
+  </div>
+
 </section>
 
 <!-- RETENTION -->
-<section class="bg-yellow-50 border-l-4 border-yellow-500 p-4 rounded-xl shadow">
-  <p class="text-sm text-gray-600">Retention Money</p>
-  <p id="retention" class="text-lg font-bold">৳ 0</p>
+<section class="bg-gradient-to-r from-slate-50 to-slate-100 border-l-8 border-slate-400 p-5 rounded-2xl shadow-lg text-center">
+  <p class="text-xs uppercase tracking-widest text-slate-600">
+    Retention Money
+  </p>
+  <p id="retention" class="text-2xl font-extrabold text-slate-800">৳ 0</p>
 </section>
 
 <!-- LAST INCOME -->
-<section class="bg-white p-4 rounded-xl shadow">
-  <h2 class="font-semibold mb-2">Last 5 Income</h2>
-  <div id="incomeList" class="space-y-2 text-sm"></div>
+<section class="bg-white p-5 rounded-2xl shadow-lg text-center">
+  <h2 class="font-semibold mb-3 text-gray-700 tracking-wide">Last 5 Income</h2>
+  <div id="incomeList" class="space-y-2 text-sm text-gray-600"></div>
 </section>
 
 <!-- LAST EXPENSE -->
-<section class="bg-white p-4 rounded-xl shadow">
-  <h2 class="font-semibold mb-2">Last 5 Expense</h2>
-  <div id="expenseList" class="space-y-2 text-sm"></div>
+<section class="bg-white p-5 rounded-2xl shadow-lg text-center">
+  <h2 class="font-semibold mb-3 text-gray-700 tracking-wide">Last 5 Expense</h2>
+  <div id="expenseList" class="space-y-2 text-sm text-gray-600"></div>
 </section>
 
 </main>
@@ -143,7 +162,21 @@ async function loadProject() {
   document.getElementById("p_start").innerText = data.start_date || "-";
   document.getElementById("p_expected").innerText = data.expected_completion || "-";
   document.getElementById("p_actual").innerText = data.actual_completion || "-";
-  document.getElementById("retention").innerText = `৳ ${data.retention || 0}`;
+  //document.getElementById("retention").innerText = `৳ ${data.retention || 0}`;
+  
+  const { data: retentionData, error } = await db
+  .from("income")
+  .select("retention")
+  .eq("project_id", projectId);
+  
+  let retention = 0;
+
+  retentionData?.forEach(row => {
+  retention += Number(row.retention ?? 0);
+  });
+
+  document.getElementById("retention").innerText = `${retention}`;
+
   // show mark-complete button when ongoing
   const markBtn = document.getElementById('markCompleteBtn');
   if (data.status && data.status.toLowerCase() === 'ongoing') markBtn.classList.remove('hidden');
@@ -155,19 +188,23 @@ async function loadSummary() {
   const { data: income } = await db.from("income").select("*").eq("project_id", projectId);
   const { data: expense } = await db.from("expense").select("*").eq("project_id", projectId);
 
-  let bill = 0, received = 0, spent = 0;
+  let bill = 0, received = 0, spent = 0, vat = 0, tax = 0;
 
   income?.forEach(i => {
-    bill += Number(i.bill_amount || 0);
+    bill += Number(i.gross_amount || 0);
     received += Number(i.received_amount || 0);
+    vat += Number(i.vat || 0);
+    tax += Number(i.tax || 0);
   });
 
   expense?.forEach(e => spent += Number(e.amount || 0));
 
-  document.getElementById("totalBill").innerText = `৳ ${bill}`;
-  document.getElementById("totalReceived").innerText = `৳ ${received}`;
-  document.getElementById("totalExpense").innerText = `৳ ${spent}`;
-  document.getElementById("balance").innerText = `৳ ${received - spent}`;
+  document.getElementById("totalBill").innerText = `${bill}`;
+  document.getElementById("vat").innerText = `${vat}`;
+  document.getElementById("tax").innerText = `${tax}`;
+  document.getElementById("totalReceived").innerText = `${received}`;
+  document.getElementById("totalExpense").innerText = `${spent}`;
+  document.getElementById("balance").innerText = `${received - spent}`;
 }
 
 /* LAST 5 INCOME */
@@ -184,7 +221,7 @@ async function loadIncome() {
   data?.forEach(i => {
     box.innerHTML += `<div class="flex justify-between border-b pb-1">
       <span>Bill ${i.bill_number}</span>
-      <span class="text-green-700">৳ ${i.received_amount}</span>
+      <span class="text-green-700"> ${i.received_amount}</span>
     </div>`;
   });
 }
@@ -203,7 +240,7 @@ async function loadExpense() {
   data?.forEach(e => {
     box.innerHTML += `<div class="flex justify-between border-b pb-1">
       <span>${e.type}</span>
-      <span class="text-red-600">৳ ${e.amount}</span>
+      <span class="text-red-600"> ${e.amount}</span>
     </div>`;
   });
 }

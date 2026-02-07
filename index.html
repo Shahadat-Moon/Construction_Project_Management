@@ -15,29 +15,46 @@
     --muted: #64748b;     /* slate-500 */
     --card-bg: #ffffff;
     --surface: #f8fafc;   /* subtle page surface */
+    --shadow: 0 10px 26px rgba(2,6,23,0.06);
   }
   html { font-family: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; }
   body { background: var(--surface); color: #0f172a; }
 
   /* summary grid: 2 columns on small screens so the 6 cards use ~three rows */
-  .summary-grid { display: grid; gap: 0.5rem; grid-template-columns: repeat(2, minmax(0,1fr)); }
+  .summary-grid { display: grid; gap: 0.4rem; grid-template-columns: repeat(2, minmax(0,1fr)); }
   @media(min-width:640px){ .summary-grid { grid-template-columns: repeat(3, minmax(0,1fr)); } }
 
   /* summary cards: center labels and values (font sizes increased) */
   .summary-card {
-    background: var(--card-bg);
-    padding: 0.8rem;               /* slightly more padding */
-    border-radius: 0.6rem;
-    box-shadow: 0 6px 18px rgba(2,6,23,0.06);
-    display:flex;
-    flex-direction:column;
-    justify-content:center; /* center vertically */
-    align-items:center;     /* center horizontally */
-    text-align:center;      /* center text */
-    min-height:80px;        /* increased height to accommodate larger text */
-  }
-  .summary-card .label { font-size:0.75rem; color:var(--muted); margin:0 0 0.3rem 0; line-height:1; }
-  .summary-card .value { font-size:1.1rem; font-weight:800; line-height:1; display:block; }
+  background: var(--card-bg);
+  padding: 0.7rem;              /* ↓ less padding */
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  min-height: 68px;             /* ↓ shorter card */
+  transition: transform .12s ease, box-shadow .12s ease;
+}
+  .summary-card .label {
+  font-size: 0.65rem;           /* ↓ smaller label */
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  text-transform: uppercase;
+  margin-bottom: 0.25rem;       /* ↓ tighter gap */
+}
+  .summary-card .value {
+  font-size: 1.05rem;           /* ↓ slightly smaller number */
+  font-weight: 800;
+  line-height: 1.1;
+}
+.summary-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 14px 34px rgba(2,6,23,0.10);
+}
 
   /* per-card value colors */
   #card-income .value { color: #06b6d4; }       /* cyan */
@@ -57,7 +74,18 @@
   header h1 { color:#0f172a; }
 
   /* project cards: base style */
-  .project-card { background: #fff; padding:0.9rem; border-radius:0.8rem; box-shadow:0 8px 24px rgba(2,6,23,0.04); display:flex; flex-direction:column; gap:0.35rem; cursor:pointer; transition:transform .12s ease, box-shadow .12s ease; }
+  .project-card {
+  background: #fff;
+  padding: 0.8rem;
+  border-radius: 1rem;
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  cursor: pointer;
+  transition: transform .15s ease, box-shadow .15s ease;
+}
+
   .project-card:hover { transform:translateY(-4px); box-shadow:0 12px 30px rgba(2,6,23,0.08); }
   .project-card h3 { font-weight:600; color:#0f172a; margin:0; font-size:1rem; }
   .project-meta { font-size:0.8rem; color:var(--muted); }
@@ -69,6 +97,40 @@
   /* projects: single column list (one card per row) */
   .projects-grid { display:grid; grid-template-columns: 1fr; gap:0.75rem; }
   @media(min-width:1024px){ .projects-grid { grid-template-columns: 1fr; } }
+
+  .remaining-work-card {
+  background: linear-gradient(135deg, #ecfdf5, #d1fae5);
+  border-left: 5px solid #10b981;
+  padding: 1.1rem;
+  border-radius: 0.7rem;
+  box-shadow: 0 7px 14px rgba(0, 0, 0, 0.08);
+  text-align: center;}
+
+  .remaining-work-card .label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #065f46;
+  margin-bottom: 0.5rem;}
+
+  .remaining-work-card .value {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #047857;}
+
+  .section-heading {
+  font-size: 1.125rem;       /* 18px */
+  font-weight: 600;
+  color: #2a0f28;
+  margin-bottom: 0.75rem;
+  border-left: 4px solid var(--accent);
+  padding-left: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+
 </style>
 </head>
 <body class="bg-gray-100">
@@ -110,13 +172,13 @@
   <div class="summary-grid">
     <div id="card-income" class="summary-card">
       <div>
-        <p class="label">Income (Last 30 Days)</p>
+        <p class="label">Income <br>Last 30 Days</p>
         <p id="income-value" class="value">৳ 0</p>
       </div>
     </div>
     <div id="card-expense" class="summary-card">
       <div>
-        <p class="label">Expense (Last 30 Days)</p>
+        <p class="label">Expense <br> Last 30 Days</p>
         <p id="expense-value" class="value">৳ 0</p>
       </div>
     </div>
@@ -134,28 +196,36 @@
     </div>
     <div id="card-contract" class="summary-card">
       <div>
-        <p class="label">Total Contract Value (Ongoing)</p>
+        <p class="label">Total Contract Value <br> Ongoing</p>
         <p id="contract-value" class="value">৳ 0</p>
       </div>
     </div>
     <div id="card-bill-received" class="summary-card">
       <div>
-        <p class="label">Total Bill Received (Ongoing)</p>
-        <p id="bill-received-value" class="value">৳ 0</p>
+        <p class="label">Total Gross Received <br> Ongoing</p>
+        <p id="gross-received-value" class="value">৳ 0</p>
       </div>
     </div>
   </div>
+  
+  <section class="remaining-work-card">
+    <p class="label">Remaining Work</p>
+    <p id="remaining-bill-value" class="value">৳ 0</p>
+  </section>
 
   <!-- Projects Section -->
-  <section>
-    <h2 class="text-xl font-bold text-gray-800 mb-4">Ongoing Projects</h2>
-    <div id="ongoingProjects" class="projects-grid"></div>
-  </section>
+  <!-- Ongoing Projects Section -->
+<section>
+  <h2 class="section-heading">Ongoing Projects</h2>
+  <div id="ongoingProjects" class="projects-grid"></div>
+</section>
 
-  <section>
-    <h2 class="text-xl font-bold text-gray-800 mt-8 mb-4">Completed Projects</h2>
-    <div id="completedProjects" class="projects-grid"></div>
-  </section>
+<!-- Completed Projects Section -->
+<section>
+  <h2 class="section-heading">Completed Projects</h2>
+  <div id="completedProjects" class="projects-grid"></div>
+</section>
+
 
 </div>
 
@@ -195,13 +265,13 @@
       const dateStr = date30.toISOString().split('T')[0];
 
       // Income & Expense
-      const { data: incomeData } = await supabaseClient.from('income').select('received_amount');
+      const { data: incomeData } = await supabaseClient.from('income').select('received_amount').gte('date', dateStr);
       const incomeSum = incomeData.reduce((acc,i)=>acc+parseFloat(i.received_amount||0),0);
-      document.getElementById('income-value').innerText='৳ '+incomeSum.toLocaleString();
+      document.getElementById('income-value').innerText=''+incomeSum.toLocaleString();
 
-      const { data: expenseData } = await supabaseClient.from('expense').select('paid_amount');
+      const { data: expenseData } = await supabaseClient.from('expense').select('paid_amount').gte('date', dateStr);
       const expenseSum = expenseData.reduce((acc,e)=>acc+parseFloat(e.paid_amount||0),0);
-      document.getElementById('expense-value').innerText='৳ '+expenseSum.toLocaleString();
+      document.getElementById('expense-value').innerText=''+expenseSum.toLocaleString();
 
       // Projects
       const { data: ongoingProjects } = await supabaseClient.from('projects').select('*').eq('status','Ongoing');
@@ -211,24 +281,27 @@
       document.getElementById('completed-count').innerText=completedProjects.length;
 
       const contractTotal = ongoingProjects.reduce((acc,p)=>acc+parseFloat(p.contract_value||0),0);
-      document.getElementById('contract-value').innerText='৳ '+contractTotal.toLocaleString();
+      document.getElementById('contract-value').innerText=''+contractTotal.toLocaleString();
 
-      const { data: billData } = await supabaseClient.from('income').select('received_amount,project_id');
-      const billReceived = billData.reduce((acc,i)=>acc+parseFloat(i.received_amount||0),0);
-      document.getElementById('bill-received-value').innerText='৳ '+billReceived.toLocaleString();
+      const { data: billData } = await supabaseClient.from('income').select('gross_amount,project_id');
+      const grossbillReceived = billData.reduce((acc,i)=>acc+parseFloat(i.gross_amount||0),0);
+      document.getElementById('gross-received-value').innerText=''+grossbillReceived.toLocaleString();
+
+      const remainingBill = contractTotal - grossbillReceived;
+      document.getElementById('remaining-bill-value').innerText=' '+remainingBill.toLocaleString();
 
       // Render project cards
       const ongoingContainer = document.getElementById('ongoingProjects');
       ongoingContainer.innerHTML='';
       ongoingProjects.forEach(p=>{
-        const projectBill = billData.filter(i=>i.project_id===p.id).reduce((acc,i)=>acc+parseFloat(i.received_amount||0),0);
+        const projectBill = billData.filter(i=>i.project_id===p.id).reduce((acc,i)=>acc+parseFloat(i.gross_amount||0),0);
         const card = document.createElement('div');
         card.className="project-card project-ongoing";
         card.innerHTML=`
           <h3>${p.name}</h3>
           <p class="project-meta">Start: ${p.start_date||'-'} | Expected: ${p.expected_completion||'-'}</p>
-          <p class="project-meta">Contract: ৳ ${parseFloat(p.contract_value||0).toLocaleString()}</p>
-          <p class="project-meta">Bill Received: ৳ ${projectBill.toLocaleString()}</p>
+          <p class="project-meta">Contract: ${parseFloat(p.contract_value||0).toLocaleString()}</p>
+          <p class="project-meta">Gross Bill Received: ${projectBill.toLocaleString()}</p>
         `;
         card.addEventListener('click',()=>{window.location.href=`project.html?id=${p.id}`});
         ongoingContainer.appendChild(card);
@@ -237,14 +310,14 @@
       const completedContainer = document.getElementById('completedProjects');
       completedContainer.innerHTML='';
       completedProjects.forEach(p=>{
-        const projectBill = billData.filter(i=>i.project_id===p.id).reduce((acc,i)=>acc+parseFloat(i.received_amount||0),0);
+        const projectBill = billData.filter(i=>i.project_id===p.id).reduce((acc,i)=>acc+parseFloat(i.gross_amount||0),0);
         const card = document.createElement('div');
         card.className="project-card project-completed";
         card.innerHTML=`
           <h3>${p.name}</h3>
           <p class="project-meta">Start: ${p.start_date||'-'} | Actual: ${p.actual_completion||'-'}</p>
-          <p class="project-meta">Contract Value: ৳ ${parseFloat(p.contract_value||0).toLocaleString()}</p>
-          <p class="project-meta">Bill Received: ৳ ${projectBill.toLocaleString()}</p>
+          <p class="project-meta">Contract Value: ${parseFloat(p.contract_value||0).toLocaleString()}</p>
+          <p class="project-meta">Gross Bill Received: ${projectBill.toLocaleString()}</p>
         `;
         card.addEventListener('click',()=>{window.location.href=`project.html?id=${p.id}`});
         completedContainer.appendChild(card);
