@@ -27,34 +27,37 @@
   /* summary cards: center labels and values (font sizes increased) */
   .summary-card {
   background: var(--card-bg);
-  padding: 0.7rem;              /* ↓ less padding */
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
+  padding: 1rem;               /* slightly bigger padding */
+  border-radius: 1rem;         /* more rounded corners */
+  box-shadow: 0 8px 16px rgba(0,0,0,0.08);  /* subtle soft shadow */
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   text-align: center;
-  min-height: 68px;             /* ↓ shorter card */
+  min-height: 80px;            /* slightly taller */
   transition: transform .12s ease, box-shadow .12s ease;
 }
-  .summary-card .label {
-  font-size: 0.65rem;           /* ↓ smaller label */
+
+.summary-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 26px rgba(0,0,0,0.1);
+}
+
+.summary-card .label {
+  font-size: 0.65rem;
   font-weight: 600;
   letter-spacing: 0.08em;
   color: var(--muted);
-  text-transform: uppercase;
-  margin-bottom: 0.25rem;       /* ↓ tighter gap */
+  margin-bottom: 0.35rem;
 }
-  .summary-card .value {
-  font-size: 1.05rem;           /* ↓ slightly smaller number */
+
+.summary-card .value {
+  font-size: 1.15rem;         /* slightly bigger numbers */
   font-weight: 800;
-  line-height: 1.1;
+  line-height: 1;
 }
-.summary-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 14px 34px rgba(2,6,23,0.10);
-}
+
 
   /* per-card value colors */
   #card-income .value { color: #06b6d4; }       /* cyan */
