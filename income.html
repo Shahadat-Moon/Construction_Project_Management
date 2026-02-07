@@ -11,9 +11,9 @@
   .income-card { border-radius: 12px; box-shadow: 0 8px 20px rgba(2,6,23,0.06); overflow:hidden; }
   .income-header { background: linear-gradient(90deg,#10b981 0%, #34d399 100%); }
   .income-row { display:flex; align-items:center; justify-content:space-between; gap:0.75rem; padding:0.5rem 0.75rem; cursor:pointer; }
-  .income-date { width:72px; min-width:72px; font-weight:600; }
-  .income-meta { min-width:140px; color:#0f172a; }
-  .income-amount { text-align:right; font-weight:700; color:#065f46; }
+  .income-date { width:85px; min-width:85px; font-weight:600; }
+  .income-meta { min-width:120px; font-weight:500; color:#0f172a; }
+  .income-amount { text-align:left; font-weight:700; color:#065f46; }
   .income-sub { font-size:0.8rem; color:#475569; }
   /* hide income-sub on small screens; reveal when row has .show-details */
   @media (max-width:640px){ .income-sub { display:none; } .income-row.show-details .income-sub { display:block; } }
@@ -99,11 +99,11 @@
                   ${incomeEntries.map(e=>`
                     <div class="income-row hover:bg-green-50 rounded">
                       <div class="flex items-center gap-3">
-                          <div class="income-date">${new Date(e.date).toLocaleDateString('en-US',{month:'short',day:'numeric'})}</div>
-                          <div class="income-meta">Gross: ৳ ${Number(e.gross_amount||0).toLocaleString()}</div>
+                          <div class="income-date">${new Date(e.date).toLocaleDateString('en-US',{day:'numeric', month:'short', year:"numeric"})}</div>
+                          <div class="income-meta">Gross: ${Number(e.gross_amount||0).toLocaleString()}</div>
                       </div>
                       <div class="flex items-center">
-                        <div class="income-amount">৳ ${Number(e.received_amount||0).toLocaleString()}</div>
+                        <div class="income-amount"> ${Number(e.received_amount||0).toLocaleString()}</div>
                         <div class="chev">▾</div>
                       </div>
                     </div>
@@ -124,9 +124,9 @@
                 detail.className = 'income-detail px-3 py-2 text-sm text-gray-600 bg-gray-50 rounded mt-1';
                 detail.style.display = 'none';
                 detail.innerHTML = `
-                  <div>VAT: ৳ ${entry.vat || 0}</div>
-                  <div>Tax: ৳ ${entry.tax || 0}</div>
-                  <div>Retention: ৳ ${entry.retention || 0}</div>
+                  <div>VAT:  ${entry.vat || 0}</div>
+                  <div>Tax: ${entry.tax || 0}</div>
+                  <div>Retention: ${entry.retention || 0}</div>
                 `;
                 row.insertAdjacentElement('afterend', detail);
                 row.addEventListener('click', ()=>{
